@@ -13,6 +13,9 @@ from app.modules.lessons.router import router as lessons_router
 from app.modules.llm_gateway.router import router as llm_gateway_router
 from app.modules.mentoring.router import router as mentoring_router
 from app.modules.progress_tracking.router import router as progress_tracking_router
+from app.modules.projects.exceptions import register_project_exception_handlers
+from app.modules.projects.router import dashboard_router as projects_dashboard_router
+from app.modules.projects.router import router as projects_router
 from app.modules.repository_integration.router import router as repository_integration_router
 from app.modules.stack_tiers.router import router as stack_tiers_router
 from app.modules.taxonomy.router import router as taxonomy_router
@@ -34,6 +37,7 @@ app.add_middleware(
 )
 
 register_auth_exception_handlers(app)
+register_project_exception_handlers(app)
 
 
 @app.get("/health")
@@ -48,6 +52,8 @@ async def health() -> dict[str, str]:
 # "single choke point" pattern applied to routing.
 for module_router in (
     auth_router,
+    projects_router,
+    projects_dashboard_router,
     repository_integration_router,
     curriculum_router,
     taxonomy_router,

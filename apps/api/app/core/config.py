@@ -81,6 +81,14 @@ class Settings(BaseSettings):
     # --- Auth: links embedded in transactional emails ---
     frontend_url: str = "http://localhost:3000"
 
+    # --- Project Workspace ---
+    # Guards against unbounded storage growth from a single authenticated
+    # account (each project is a real row plus a 1:1 settings row) —
+    # there's no per-operation cost ledger for plain CRUD the way LLM
+    # calls have one (see ARCHITECTURE.md's Cost & Abuse Control module),
+    # so this is a simple ceiling rather than a full quota system.
+    max_active_projects_per_owner: int = 200
+
     @property
     def is_production(self) -> bool:
         return self.environment == "production"
