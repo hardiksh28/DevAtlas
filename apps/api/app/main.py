@@ -20,7 +20,7 @@ from app.modules.taxonomy.router import router as taxonomy_router
 settings = get_settings()
 
 app = FastAPI(
-    title="AI Engineering Workspace API",
+    title="DevAtlas API",
     version="0.1.0",
     docs_url="/docs" if not settings.is_production else None,
 )

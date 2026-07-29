@@ -1,7 +1,7 @@
 [project]
 name = "api"
 version = "0.1.0"
-description = "AI Engineering Workspace — FastAPI application (modular monolith)"
+description = "DevAtlas — FastAPI application (modular monolith)"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115.0",

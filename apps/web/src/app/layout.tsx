@@ -6,7 +6,7 @@ import { QueryProvider } from "@/lib/query-client";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "AI Engineering Workspace",
+  title: "DevAtlas",
   description: "An AI mentor that teaches by guiding, not generating.",
 };
 

@@ -1,4 +1,4 @@
-# AI Engineering Workspace — V1 Architecture Document
+# DevAtlas — V1 Architecture Document
 
 **Status:** Sprint 0 complete — architecture locked for implementation planning
 **Scope:** This document reflects the V1 wedge only. Items explicitly deferred to later versions are called out throughout rather than hidden.
@@ -228,7 +228,7 @@ sequenceDiagram
 ## 6. Folder Structure for a Scalable Monorepo
 
 ```
-ai-engineering-workspace/
+devatlas/
 ├── apps/
 │   ├── web/                      # Next.js client — no business logic, renders state
 │   └── api/                      # FastAPI application — the modular monolith

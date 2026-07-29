@@ -1,4 +1,4 @@
-# AI Engineering Workspace
+# DevAtlas
 
 An AI mentor that teaches by guiding, not generating. See [`docs/architecture/ARCHITECTURE.md`](docs/architecture/ARCHITECTURE.md) for the full system design — module boundaries, data flow, and the reasoning behind every stack choice below.
 
