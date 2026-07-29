@@ -1,0 +1,30 @@
+# Example only — shows the shape the Taxonomy Service expects.
+# id must be globally unique and stable; renaming one breaks every
+# user_concept_mastery row that references it (ARCHITECTURE.md Section 7),
+# so treat these ids as append-only, never rename-in-place.
+
+stack: python
+stack_version: "3.12"
+
+concepts:
+  - id: python.variables_and_types
+    severity: foundational
+    prerequisites: []
+    mastery_criteria:
+      - "Can explain why `x = 5` binds a name rather than copying a value"
+    common_misconceptions:
+      - "Believing Python variables are typed containers, like in C"
+    docs:
+      - https://docs.python.org/3/tutorial/introduction.html
+
+  - id: python.async_await
+    severity: intermediate
+    prerequisites:
+      - python.functions
+    mastery_criteria:
+      - "Can explain why `await` inside a sync function is a SyntaxError"
+      - "Can identify when `asyncio.gather` vs sequential awaits is correct"
+    common_misconceptions:
+      - "Assuming `async def` alone makes a function run concurrently"
+    docs:
+      - https://docs.python.org/3/library/asyncio-task.html

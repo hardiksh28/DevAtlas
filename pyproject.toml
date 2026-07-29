@@ -1,0 +1,8 @@
+[tool.uv.workspace]
+members = ["apps/api", "services/ingestion_worker", "packages/schemas"]
+
+# This root pyproject.toml has no [project] table — it's a "virtual" uv
+# workspace root, not a package itself. It exists only so `packages/schemas`
+# can be a real, versioned dependency of both apps/api and the ingestion
+# worker (via `schemas = { workspace = true }` in their pyproject.toml)
+# instead of a copy-pasted or path-hacked import.

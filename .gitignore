@@ -1,0 +1,41 @@
+# --- Environment & secrets ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# --- Node / pnpm / Next.js ---
+node_modules/
+.pnpm-store/
+apps/web/.next/
+apps/web/out/
+apps/web/next-env.d.ts
+**/dist/
+**/build/
+*.tsbuildinfo
+.turbo/
+
+# --- Python ---
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# --- Docker / infra ---
+infra/docker/postgres/data/
+infra/docker/ollama/data/
+*.log
+
+# --- Editors / OS ---
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db

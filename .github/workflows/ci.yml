@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Cancels a stale run when new commits land on the same PR/branch, so CI
+# minutes aren't spent finishing a check for code that's already outdated.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm --filter web typecheck
+      - run: pnpm --filter web lint
+      - run: pnpm --filter web build
+
+  api:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    services:
+      # Auth's integration tests (tests/conftest.py) fall back to
+      # in-memory SQLite when TEST_DATABASE_URL isn't set, which is what
+      # lets `uv run pytest` work on a laptop without Docker — but that
+      # fallback can't exercise CITEXT/INET, so CI runs the same suite
+      # here against the real dialect for full fidelity.
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U test -d test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      # get_settings() requires these (app/core/config.py) — CI has no
+      # .env file (it's gitignored), so they're supplied here directly.
+      # Not real secrets: this key only ever signs tokens inside this
+      # ephemeral CI run's own Postgres/Redis containers.
+      API_SECRET_KEY: ci-test-secret-key-not-used-anywhere-real
+      DATABASE_URL: postgresql+asyncpg://test:test@localhost:5432/test
+      REDIS_URL: redis://localhost:6379/0
+      TEST_DATABASE_URL: postgresql+asyncpg://test:test@localhost:5432/test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - run: uv sync --all-extras
+
+      - run: uv run ruff check .
+      - run: uv run mypy app --ignore-missing-imports
+      - run: uv run pytest --no-header -q
+
+  worker:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/ingestion_worker
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - run: uv sync
+
+      - run: uv run ruff check .
