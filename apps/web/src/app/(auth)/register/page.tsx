@@ -31,8 +31,10 @@ export default function RegisterPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-xl font-semibold text-slate-900">Create an account</h1>
-        <p className="mt-1 text-sm text-slate-600">Start learning by building.</p>
+        <h1 className="text-xl font-semibold text-ink">Create your account</h1>
+        <p className="mt-1 text-sm text-ink-muted">
+          Start with a project. Learn what it takes to ship it.
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -63,24 +65,29 @@ export default function RegisterPage() {
           minLength={PASSWORD_MIN_LENGTH}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          hint={`At least ${PASSWORD_MIN_LENGTH} characters.`}
+          error={
+            passwordTooShort
+              ? `Password must be at least ${PASSWORD_MIN_LENGTH} characters.`
+              : undefined
+          }
         />
-        {passwordTooShort && (
-          <p className="text-sm text-red-600">
-            Password must be at least {PASSWORD_MIN_LENGTH} characters.
+
+        {register.isError && (
+          <p role="alert" className="text-sm text-danger-ink">
+            {register.error.message}
           </p>
         )}
 
-        {register.isError && <p className="text-sm text-red-600">{register.error.message}</p>}
-
-        <Button type="submit" disabled={register.isPending} className="w-full">
-          {register.isPending ? "Creating account…" : "Create account"}
+        <Button type="submit" loading={register.isPending} className="w-full">
+          Create account
         </Button>
       </form>
 
-      <p className="text-sm text-slate-600">
+      <p className="text-sm text-ink-muted">
         Already have an account?{" "}
-        <Link href="/login" className="font-medium hover:underline">
-          Log in
+        <Link href="/login" className="rounded-sm font-medium text-accent-ink hover:underline">
+          Sign in
         </Link>
       </p>
     </div>

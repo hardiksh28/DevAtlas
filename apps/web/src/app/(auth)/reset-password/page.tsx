@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
@@ -27,20 +28,17 @@ function ResetPasswordForm() {
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     if (!token || passwordsMismatch) return;
-    resetPassword.mutate(
-      { token, password },
-      { onSuccess: () => router.push("/login") },
-    );
+    resetPassword.mutate({ token, password }, { onSuccess: () => router.push("/login") });
   }
 
   if (!token) {
     return (
       <div className="flex flex-col gap-4">
-        <h1 className="text-xl font-semibold text-slate-900">Invalid link</h1>
-        <p className="text-sm text-slate-600">
+        <h1 className="text-xl font-semibold text-ink">Invalid link</h1>
+        <p className="text-sm text-ink-muted">
           This password reset link is missing its token. Request a new one below.
         </p>
-        <Link href="/forgot-password" className="text-sm font-medium text-slate-900 hover:underline">
+        <Link href="/forgot-password" className="rounded-sm text-sm font-medium text-accent-ink hover:underline">
           Request a new link
         </Link>
       </div>
@@ -50,8 +48,10 @@ function ResetPasswordForm() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-xl font-semibold text-slate-900">Reset password</h1>
-        <p className="mt-1 text-sm text-slate-600">Choose a new password.</p>
+        <h1 className="text-xl font-semibold text-ink">Choose a new password</h1>
+        <p className="mt-1 text-sm text-ink-muted">
+          You&apos;ll be signed in again with the new password.
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -64,6 +64,7 @@ function ResetPasswordForm() {
           minLength={PASSWORD_MIN_LENGTH}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          hint={`At least ${PASSWORD_MIN_LENGTH} characters.`}
         />
         <FormField
           id="confirm_password"
@@ -73,17 +74,27 @@ function ResetPasswordForm() {
           required
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
+          error={passwordsMismatch ? "Passwords don't match." : undefined}
         />
-        {passwordsMismatch && <p className="text-sm text-red-600">Passwords don&apos;t match.</p>}
 
         {resetPassword.isError && (
-          <p className="text-sm text-red-600">{resetPassword.error.message}</p>
+          <p role="alert" className="text-sm text-danger-ink">
+            {resetPassword.error.message}
+          </p>
         )}
 
-        <Button type="submit" disabled={resetPassword.isPending} className="w-full">
-          {resetPassword.isPending ? "Resetting…" : "Reset password"}
+        <Button type="submit" loading={resetPassword.isPending} className="w-full">
+          Reset password
         </Button>
       </form>
+
+      <Link
+        href="/login"
+        className="inline-flex items-center gap-1.5 rounded-sm text-sm text-ink-secondary hover:text-ink hover:underline"
+      >
+        <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+        Back to sign in
+      </Link>
     </div>
   );
 }

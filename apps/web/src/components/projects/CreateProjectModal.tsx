@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "ui";
 
 import { FormField } from "@/components/auth/FormField";
+import { Dialog } from "@/components/ui/Dialog";
+import { TextArea } from "@/components/ui/TextArea";
 import { useCreateProject } from "@/hooks/useProjects";
 
 interface CreateProjectModalProps {
@@ -12,35 +14,20 @@ interface CreateProjectModalProps {
   onCreated: (projectId: string) => void;
 }
 
-/**
- * Hand-rolled overlay, not a dialog/portal library — package.json has
- * none yet (no Radix, no shadcn), and this is the only modal in the
- * app so far. Revisit if a second, more complex modal shows up and
- * reimplementing focus-trap/escape/outside-click by hand starts
- * costing more than a dependency would.
- */
 export function CreateProjectModal({ open, onClose, onCreated }: CreateProjectModalProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const nameInputRef = useRef<HTMLInputElement>(null);
   const createProject = useCreateProject();
+  const { reset } = createProject;
 
+  // Fresh form each time the dialog opens.
   useEffect(() => {
-    if (!open) return;
-    setName("");
-    setDescription("");
-    createProject.reset();
-    nameInputRef.current?.focus();
-
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") onClose();
+    if (open) {
+      setName("");
+      setDescription("");
+      reset();
     }
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
-
-  if (!open) return null;
+  }, [open, reset]);
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -51,60 +38,54 @@ export function CreateProjectModal({ open, onClose, onCreated }: CreateProjectMo
   }
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4"
-      onClick={onClose}
+    <Dialog
+      open={open}
+      onClose={onClose}
+      title="Create a project"
+      description="Pick something you actually want to exist — the best learning projects solve a problem you care about."
     >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="create-project-title"
-        className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <h2 id="create-project-title" className="text-lg font-semibold text-slate-900">
-          Create a project
-        </h2>
-        <p className="mt-1 text-sm text-slate-600">Give it a name — you can change everything later.</p>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <FormField
+          id="project-name"
+          label="Name"
+          required
+          maxLength={200}
+          autoFocus
+          value={name}
+          placeholder="e.g. Support-ticket triage agent"
+          onChange={(e) => setName(e.target.value)}
+        />
+        <TextArea
+          id="project-description"
+          label="Description"
+          optional
+          rows={3}
+          maxLength={4000}
+          value={description}
+          placeholder="What should it do, and for whom?"
+          hint="A concrete goal helps your future roadmap — you can change everything later."
+          onChange={(e) => setDescription(e.target.value)}
+        />
 
-        <form onSubmit={handleSubmit} className="mt-5 flex flex-col gap-4">
-          <FormField
-            id="project-name"
-            label="Name"
-            ref={nameInputRef}
-            required
-            maxLength={200}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <div className="flex flex-col gap-1">
-            <label htmlFor="project-description" className="text-sm font-medium text-slate-700">
-              Description <span className="text-slate-400">(optional)</span>
-            </label>
-            <textarea
-              id="project-description"
-              rows={3}
-              maxLength={4000}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
-            />
-          </div>
+        {createProject.isError && (
+          <p role="alert" className="text-sm text-danger-ink">
+            {createProject.error.message}
+          </p>
+        )}
 
-          {createProject.isError && (
-            <p className="text-sm text-red-600">{createProject.error.message}</p>
-          )}
-
-          <div className="mt-1 flex justify-end gap-2">
-            <Button type="button" variant="secondary" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={createProject.isPending || name.trim().length === 0}>
-              {createProject.isPending ? "Creating…" : "Create project"}
-            </Button>
-          </div>
-        </form>
-      </div>
-    </div>
+        <div className="mt-1 flex justify-end gap-2">
+          <Button type="button" variant="secondary" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            loading={createProject.isPending}
+            disabled={name.trim().length === 0}
+          >
+            Create project
+          </Button>
+        </div>
+      </form>
+    </Dialog>
   );
 }

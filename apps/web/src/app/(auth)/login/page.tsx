@@ -28,11 +28,11 @@ function LoginForm() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-xl font-semibold text-slate-900">Log in</h1>
-        <p className="mt-1 text-sm text-slate-600">Welcome back.</p>
+        <h1 className="text-xl font-semibold text-ink">Sign in</h1>
+        <p className="mt-1 text-sm text-ink-muted">Welcome back — pick up where you left off.</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate={false}>
         <FormField
           id="email"
           label="Email"
@@ -52,18 +52,22 @@ function LoginForm() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        {login.isError && <p className="text-sm text-red-600">{login.error.message}</p>}
+        {login.isError && (
+          <p role="alert" className="text-sm text-danger-ink">
+            {login.error.message}
+          </p>
+        )}
 
-        <Button type="submit" disabled={login.isPending} className="w-full">
-          {login.isPending ? "Logging in…" : "Log in"}
+        <Button type="submit" loading={login.isPending} className="w-full">
+          Sign in
         </Button>
       </form>
 
-      <div className="flex justify-between text-sm text-slate-600">
-        <Link href="/forgot-password" className="hover:underline">
+      <div className="flex justify-between text-sm">
+        <Link href="/forgot-password" className="rounded-sm text-ink-secondary hover:text-ink hover:underline">
           Forgot password?
         </Link>
-        <Link href="/register" className="hover:underline">
+        <Link href="/register" className="rounded-sm font-medium text-accent-ink hover:underline">
           Create an account
         </Link>
       </div>

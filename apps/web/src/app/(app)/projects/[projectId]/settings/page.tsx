@@ -6,6 +6,8 @@ import { Button } from "ui";
 
 import { FormField } from "@/components/auth/FormField";
 import { PROJECT_COLOR_CLASSES, PROJECT_COLORS } from "@/components/projects/colors";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { TextArea } from "@/components/ui/TextArea";
 import {
   useArchiveProject,
   useDeleteProject,
@@ -14,6 +16,10 @@ import {
   useUpdateProject,
   useUpdateProjectSettings,
 } from "@/hooks/useProjects";
+
+// Curated identity glyphs (stored by the API as the project's icon
+// string — user-chosen content, not UI iconography).
+const PROJECT_ICONS = ["📁", "🧭", "🤖", "📚", "🔍", "💬", "🗺️", "🧪", "📊", "🚀"];
 
 export default function ProjectSettingsPage() {
   const params = useParams<{ projectId: string }>();
@@ -28,6 +34,7 @@ export default function ProjectSettingsPage() {
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   useEffect(() => {
     if (project) {
@@ -43,18 +50,13 @@ export default function ProjectSettingsPage() {
     updateProject.mutate({ name, description: description.trim() || null });
   }
 
-  function handleDelete() {
-    if (!window.confirm(`Delete "${project?.name}"? You can restore it later from your account.`)) {
-      return;
-    }
-    deleteProject.mutate(params.projectId, { onSuccess: () => router.push("/projects") });
-  }
-
   return (
     <div className="flex flex-col gap-6">
-      <section className="rounded-lg border border-slate-200 bg-white p-5">
-        <h2 className="text-sm font-semibold text-slate-700">Details</h2>
-        <form onSubmit={handleSaveDetails} className="mt-4 flex flex-col gap-4">
+      <section aria-labelledby="details-heading" className="rounded-lg border border-line bg-surface p-5">
+        <h2 id="details-heading" className="text-sm font-semibold text-ink-secondary">
+          Details
+        </h2>
+        <form onSubmit={handleSaveDetails} className="mt-4 flex max-w-lg flex-col gap-4">
           <FormField
             id="settings-name"
             label="Name"
@@ -63,34 +65,73 @@ export default function ProjectSettingsPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
-          <div className="flex flex-col gap-1">
-            <label htmlFor="settings-description" className="text-sm font-medium text-slate-700">
-              Description
-            </label>
-            <textarea
-              id="settings-description"
-              rows={3}
-              maxLength={4000}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
-            />
-          </div>
+          <TextArea
+            id="settings-description"
+            label="Description"
+            optional
+            rows={3}
+            maxLength={4000}
+            value={description}
+            hint="What the project should do, and for whom — the future roadmap generator works from this."
+            onChange={(e) => setDescription(e.target.value)}
+          />
           {updateProject.isError && (
-            <p className="text-sm text-red-600">{updateProject.error.message}</p>
+            <p role="alert" className="text-sm text-danger-ink">
+              {updateProject.error.message}
+            </p>
           )}
-          <div>
-            <Button type="submit" disabled={updateProject.isPending || name.trim().length === 0}>
-              {updateProject.isPending ? "Saving…" : "Save changes"}
+          <div className="flex items-center gap-3">
+            <Button
+              type="submit"
+              loading={updateProject.isPending}
+              disabled={name.trim().length === 0}
+            >
+              Save changes
             </Button>
+            {updateProject.isSuccess && !updateProject.isPending && (
+              <p role="status" className="text-sm text-success-ink">
+                Changes saved.
+              </p>
+            )}
           </div>
         </form>
       </section>
 
-      <section className="rounded-lg border border-slate-200 bg-white p-5">
-        <h2 className="text-sm font-semibold text-slate-700">Appearance</h2>
-        <p className="mt-1 text-sm text-slate-500">Shown on project cards throughout the workspace.</p>
-        <div className="mt-4 flex gap-2">
+      <section aria-labelledby="appearance-heading" className="rounded-lg border border-line bg-surface p-5">
+        <h2 id="appearance-heading" className="text-sm font-semibold text-ink-secondary">
+          Appearance
+        </h2>
+        <p className="mt-1 text-sm text-ink-muted">
+          The icon and color shown on this project&apos;s cards throughout the workspace.
+        </p>
+
+        <p className="mt-4 text-xs font-medium uppercase tracking-wide text-ink-faint">Icon</p>
+        <div className="mt-2 flex flex-wrap gap-2" role="radiogroup" aria-label="Project icon">
+          {PROJECT_ICONS.map((icon) => {
+            const selected = project.icon === icon;
+            return (
+              <button
+                key={icon}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                aria-label={`Icon ${icon}`}
+                disabled={updateSettings.isPending}
+                onClick={() => updateSettings.mutate({ icon })}
+                className={`flex h-10 w-10 items-center justify-center rounded-md border text-lg transition-colors ${
+                  selected
+                    ? "border-accent bg-accent-soft"
+                    : "border-line hover:bg-surface-muted"
+                }`}
+              >
+                {icon}
+              </button>
+            );
+          })}
+        </div>
+
+        <p className="mt-5 text-xs font-medium uppercase tracking-wide text-ink-faint">Color</p>
+        <div className="mt-2 flex flex-wrap gap-2" role="radiogroup" aria-label="Project color">
           {PROJECT_COLORS.map((color) => {
             const classes = PROJECT_COLOR_CLASSES[color];
             const selected = project.color === color;
@@ -98,45 +139,95 @@ export default function ProjectSettingsPage() {
               <button
                 key={color}
                 type="button"
-                aria-label={color}
-                aria-pressed={selected}
+                role="radio"
+                aria-checked={selected}
+                aria-label={`Color ${color}`}
                 disabled={updateSettings.isPending}
                 onClick={() => updateSettings.mutate({ color })}
-                className={`h-8 w-8 rounded-full ${classes.bg} ${
-                  selected ? "ring-2 ring-offset-2 ring-slate-900" : ""
+                className={`flex h-10 w-10 items-center justify-center rounded-md border transition-colors ${
+                  selected ? "border-accent bg-accent-soft" : "border-line hover:bg-surface-muted"
                 }`}
-              />
+              >
+                <span className={`h-5 w-5 rounded-full ${classes.swatch}`} aria-hidden="true" />
+              </button>
             );
           })}
         </div>
+        {updateSettings.isError && (
+          <p role="alert" className="mt-3 text-sm text-danger-ink">
+            {updateSettings.error.message}
+          </p>
+        )}
       </section>
 
-      <section className="rounded-lg border border-red-200 bg-red-50 p-5">
-        <h2 className="text-sm font-semibold text-red-800">Danger zone</h2>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {project.status === "active" && (
+      <section aria-labelledby="archive-heading" className="rounded-lg border border-line bg-surface p-5">
+        <h2 id="archive-heading" className="text-sm font-semibold text-ink-secondary">
+          {project.status === "archived" ? "Restore" : "Archive"}
+        </h2>
+        <p className="mt-1 max-w-lg text-sm text-ink-muted">
+          {project.status === "archived"
+            ? "Bring this project back to your active workspace."
+            : "Hide this project from your active workspace without deleting anything. You can restore it any time."}
+        </p>
+        {(archiveProject.isError || restoreProject.isError) && (
+          <p role="alert" className="mt-2 text-sm text-danger-ink">
+            {archiveProject.error?.message ?? restoreProject.error?.message}
+          </p>
+        )}
+        <div className="mt-4">
+          {project.status === "active" ? (
             <Button
               variant="secondary"
-              disabled={archiveProject.isPending}
+              loading={archiveProject.isPending}
               onClick={() => archiveProject.mutate(params.projectId)}
             >
               Archive project
             </Button>
-          )}
-          {project.status === "archived" && (
+          ) : (
             <Button
               variant="secondary"
-              disabled={restoreProject.isPending}
+              loading={restoreProject.isPending}
               onClick={() => restoreProject.mutate(params.projectId)}
             >
               Restore project
             </Button>
           )}
-          <Button variant="danger" disabled={deleteProject.isPending} onClick={handleDelete}>
+        </div>
+      </section>
+
+      <section
+        aria-labelledby="danger-heading"
+        className="rounded-lg border border-danger/30 bg-surface p-5"
+      >
+        <h2 id="danger-heading" className="text-sm font-semibold text-danger-ink">
+          Danger zone
+        </h2>
+        <p className="mt-1 max-w-lg text-sm text-ink-muted">
+          Deleting removes this project from your workspace. It can be restored from your account
+          for a limited time.
+        </p>
+        <div className="mt-4">
+          <Button variant="danger" onClick={() => setDeleteOpen(true)}>
             Delete project
           </Button>
         </div>
       </section>
+
+      <ConfirmDialog
+        open={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={() =>
+          deleteProject.mutate(params.projectId, {
+            onSuccess: () => router.push("/projects"),
+          })
+        }
+        title={`Delete "${project.name}"?`}
+        description="The project will be removed from your workspace. You can restore it later from your account."
+        confirmLabel="Delete project"
+        destructive
+        pending={deleteProject.isPending}
+        error={deleteProject.isError ? deleteProject.error.message : null}
+      />
     </div>
   );
 }

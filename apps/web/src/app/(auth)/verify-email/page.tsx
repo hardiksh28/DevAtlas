@@ -1,5 +1,6 @@
 "use client";
 
+import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef } from "react";
@@ -20,28 +21,45 @@ function VerifyEmailStatus() {
   }, [token, verifyEmail]);
 
   if (!token) {
-    return <p className="text-sm text-slate-600">This verification link is missing its token.</p>;
+    return (
+      <p className="text-sm text-ink-muted">This verification link is missing its token.</p>
+    );
   }
 
   if (verifyEmail.isPending || verifyEmail.isIdle) {
-    return <p className="text-sm text-slate-600">Verifying your email…</p>;
+    return (
+      <p className="flex items-center gap-2 text-sm text-ink-muted">
+        <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+        Verifying your email…
+      </p>
+    );
   }
 
   if (verifyEmail.isError) {
-    return <p className="text-sm text-red-600">{verifyEmail.error.message}</p>;
+    return (
+      <p role="alert" className="flex items-center gap-2 text-sm text-danger-ink">
+        <XCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
+        {verifyEmail.error.message}
+      </p>
+    );
   }
 
-  return <p className="text-sm text-slate-600">Your email has been verified.</p>;
+  return (
+    <p className="flex items-center gap-2 text-sm text-success-ink">
+      <CheckCircle2 className="h-4 w-4 shrink-0" aria-hidden="true" />
+      Your email has been verified.
+    </p>
+  );
 }
 
 export default function VerifyEmailPage() {
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-xl font-semibold text-slate-900">Verify email</h1>
+      <h1 className="text-xl font-semibold text-ink">Verify email</h1>
       <Suspense>
         <VerifyEmailStatus />
       </Suspense>
-      <Link href="/dashboard" className="text-sm font-medium text-slate-900 hover:underline">
+      <Link href="/dashboard" className="rounded-sm text-sm font-medium text-accent-ink hover:underline">
         Continue to dashboard
       </Link>
     </div>

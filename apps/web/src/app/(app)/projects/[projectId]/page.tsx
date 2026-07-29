@@ -1,38 +1,135 @@
 "use client";
 
+import {
+  ArrowRight,
+  BookOpen,
+  FileText,
+  GitPullRequest,
+  Map,
+  MessageSquare,
+  TrendingUp,
+  type LucideIcon,
+} from "lucide-react";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 
-import { formatRelativeTime } from "@/lib/format";
+import { WorkspacePreview } from "@/components/projects/WorkspacePreview";
+import { Badge } from "@/components/ui/Badge";
 import { useProject } from "@/hooks/useProjects";
 
-/**
- * Project overview — deliberately minimal for now. The roadmap,
- * milestones, and mentoring surfaces this tab will eventually host are
- * later steps (ARCHITECTURE.md Section 7's curriculum/taxonomy tables
- * aren't built yet); this page is the workspace shell they'll attach
- * to, not a placeholder for its own sake.
- */
+// Future modules shown as visible-but-honest placeholders. None of
+// these render interactive controls — the only live actions on this
+// page are real ones (Settings).
+const MODULES: { icon: LucideIcon; title: string; body: string }[] = [
+  {
+    icon: FileText,
+    title: "Documentation",
+    body: "Ingest the docs and repositories your project depends on.",
+  },
+  {
+    icon: Map,
+    title: "Roadmap",
+    body: "A milestone plan generated from your project's goal and stack.",
+  },
+  {
+    icon: MessageSquare,
+    title: "Mentor",
+    body: "Ask questions and get progressive hints grounded in your code.",
+  },
+  {
+    icon: GitPullRequest,
+    title: "Code Review",
+    body: "Reviews of your commits, tuned to what you're learning.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Progress",
+    body: "Concept mastery and milestone completion over time.",
+  },
+];
+
 export default function ProjectOverviewPage() {
   const params = useParams<{ projectId: string }>();
   const { data: project } = useProject(params.projectId);
 
   if (!project) return null;
 
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="rounded-lg border border-slate-200 bg-white p-5">
-        <h2 className="text-sm font-semibold text-slate-700">About</h2>
-        <p className="mt-2 text-sm text-slate-600">
-          {project.description ?? "No description yet — add one from Settings."}
-        </p>
-        <p className="mt-4 text-xs text-slate-400">
-          Created {formatRelativeTime(project.created_at)}
-        </p>
-      </div>
+  const needsDescription = !project.description;
 
-      <div className="rounded-lg border border-dashed border-slate-300 p-5 text-sm text-slate-500">
-        The roadmap and mentoring workspace for this project will live here.
-      </div>
+  return (
+    <div className="flex flex-col gap-8">
+      {/* Start here — always points at a real, currently-possible action. */}
+      <section
+        aria-labelledby="start-here-heading"
+        className="rounded-lg border border-line bg-surface p-5"
+      >
+        <h2 id="start-here-heading" className="flex items-center gap-2 text-sm font-semibold text-ink-secondary">
+          <BookOpen className="h-4 w-4" aria-hidden="true" />
+          Start here
+        </h2>
+        {needsDescription ? (
+          <>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-ink-secondary">
+              Describe what this project should do and for whom. A concrete goal is what the
+              roadmap generator will work from when it lands — and it sharpens your own thinking
+              now.
+            </p>
+            <Link
+              href={`/projects/${project.id}/settings`}
+              className="mt-3 inline-flex items-center gap-1.5 rounded-sm text-sm font-medium text-accent-ink hover:underline"
+            >
+              Add a description in Settings
+              <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+            </Link>
+          </>
+        ) : (
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-ink-secondary">
+            Your project is set up. The next step — adding documentation so your mentor understands
+            your stack — is the module we&apos;re building now. Until then, keep refining the
+            project&apos;s scope in Settings.
+          </p>
+        )}
+      </section>
+
+      {/* Roadmap placeholder — explicitly labeled, no fake content. */}
+      <section aria-labelledby="roadmap-heading">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 id="roadmap-heading" className="text-sm font-semibold text-ink-secondary">
+            Project roadmap
+          </h2>
+          <Badge variant="outline">Available after documentation ingestion</Badge>
+        </div>
+        <div className="mt-3 rounded-lg border border-dashed border-line-strong p-5">
+          <p className="max-w-2xl text-sm leading-relaxed text-ink-muted">
+            Once you can add documentation and a repository, DevAtlas will generate a milestone
+            roadmap here — the ordered path from this project&apos;s current state to a deployed,
+            reviewed piece of software.
+          </p>
+        </div>
+      </section>
+
+      {/* Module grid */}
+      <section aria-labelledby="modules-heading">
+        <h2 id="modules-heading" className="text-sm font-semibold text-ink-secondary">
+          Modules
+        </h2>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {MODULES.map((mod) => (
+            <div key={mod.title} className="rounded-lg border border-line bg-surface p-4">
+              <div className="flex items-center justify-between gap-2">
+                <span className="flex h-8 w-8 items-center justify-center rounded-md bg-surface-muted text-ink-muted">
+                  <mod.icon className="h-4 w-4" aria-hidden="true" />
+                </span>
+                <Badge variant="outline">Coming soon</Badge>
+              </div>
+              <h3 className="mt-3 text-sm font-semibold text-ink">{mod.title}</h3>
+              <p className="mt-1 text-sm text-ink-muted">{mod.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <WorkspacePreview />
     </div>
   );
 }

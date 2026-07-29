@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowLeft, MailCheck } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "ui";
@@ -24,10 +25,15 @@ export default function ForgotPasswordPage() {
   if (forgotPassword.isSuccess) {
     return (
       <div className="flex flex-col gap-4">
-        <h1 className="text-xl font-semibold text-slate-900">Check your email</h1>
-        <p className="text-sm text-slate-600">{forgotPassword.data.message}</p>
-        <Link href="/login" className="text-sm font-medium text-slate-900 hover:underline">
-          Back to login
+        <MailCheck className="h-6 w-6 text-success-ink" aria-hidden="true" />
+        <h1 className="text-xl font-semibold text-ink">Check your email</h1>
+        <p className="text-sm text-ink-muted">{forgotPassword.data.message}</p>
+        <Link
+          href="/login"
+          className="inline-flex items-center gap-1.5 rounded-sm text-sm font-medium text-accent-ink hover:underline"
+        >
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          Back to sign in
         </Link>
       </div>
     );
@@ -36,8 +42,8 @@ export default function ForgotPasswordPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-xl font-semibold text-slate-900">Forgot password</h1>
-        <p className="mt-1 text-sm text-slate-600">
+        <h1 className="text-xl font-semibold text-ink">Reset your password</h1>
+        <p className="mt-1 text-sm text-ink-muted">
           Enter your email and we&apos;ll send you a reset link.
         </p>
       </div>
@@ -54,16 +60,22 @@ export default function ForgotPasswordPage() {
         />
 
         {forgotPassword.isError && (
-          <p className="text-sm text-red-600">{forgotPassword.error.message}</p>
+          <p role="alert" className="text-sm text-danger-ink">
+            {forgotPassword.error.message}
+          </p>
         )}
 
-        <Button type="submit" disabled={forgotPassword.isPending} className="w-full">
-          {forgotPassword.isPending ? "Sending…" : "Send reset link"}
+        <Button type="submit" loading={forgotPassword.isPending} className="w-full">
+          Send reset link
         </Button>
       </form>
 
-      <Link href="/login" className="text-sm text-slate-600 hover:underline">
-        Back to login
+      <Link
+        href="/login"
+        className="inline-flex items-center gap-1.5 rounded-sm text-sm text-ink-secondary hover:text-ink hover:underline"
+      >
+        <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+        Back to sign in
       </Link>
     </div>
   );

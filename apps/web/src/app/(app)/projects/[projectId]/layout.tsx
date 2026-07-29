@@ -1,41 +1,53 @@
 "use client";
 
 import Link from "next/link";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
 import { PROJECT_COLOR_CLASSES } from "@/components/projects/colors";
+import { Badge } from "@/components/ui/Badge";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { useProject } from "@/hooks/useProjects";
 
 /**
  * Project-scoped chrome: icon/name header + Overview/Settings tabs.
  * Nested one level below app/(app)/layout.tsx (which already handles
- * the Sidebar and the "am I logged in" check) — this layer only adds
+ * the AppShell and the "am I logged in" check) — this layer only adds
  * what's specific to being inside one project.
  */
 export default function ProjectLayout({ children }: { children: ReactNode }) {
   const params = useParams<{ projectId: string }>();
   const pathname = usePathname();
-  const router = useRouter();
   const { data: project, isLoading, isError } = useProject(params.projectId);
 
   if (isError) {
     return (
-      <div className="mx-auto max-w-3xl p-8">
-        <p className="text-sm text-slate-600">
-          This project doesn&apos;t exist or you don&apos;t have access to it.{" "}
-          <button onClick={() => router.push("/projects")} className="font-medium underline">
+      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+        <ErrorState
+          title="Project not found"
+          message="This project doesn't exist or you don't have access to it."
+        />
+        <div className="mt-4 text-center">
+          <Link href="/projects" className="rounded-sm text-sm font-medium text-accent-ink hover:underline">
             Back to projects
-          </button>
-        </p>
+          </Link>
+        </div>
       </div>
     );
   }
 
   if (isLoading || !project) {
     return (
-      <div className="mx-auto max-w-3xl p-8">
-        <p className="text-sm text-slate-500">Loading…</p>
+      <div className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8">
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-11 w-11" />
+          <div className="flex flex-col gap-2">
+            <Skeleton className="h-5 w-48" />
+            <Skeleton className="h-3 w-64" />
+          </div>
+        </div>
+        <Skeleton className="h-40 w-full" />
       </div>
     );
   }
@@ -48,28 +60,39 @@ export default function ProjectLayout({ children }: { children: ReactNode }) {
   ];
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-6 p-8">
-      <div className="flex items-center gap-3">
-        <span className={`flex h-10 w-10 items-center justify-center rounded-md text-xl ${colors.bg}`}>
+    <div className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8">
+      <div className="flex items-start gap-3">
+        <span
+          aria-hidden="true"
+          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-xl ${colors.bg}`}
+        >
           {project.icon}
         </span>
-        <div>
-          <h1 className="text-xl font-semibold text-slate-900">{project.name}</h1>
-          {project.status === "archived" && (
-            <span className="text-xs font-medium text-slate-500">Archived</span>
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="truncate text-xl font-semibold tracking-tight text-ink">
+              {project.name}
+            </h1>
+            {project.status === "archived" && <Badge>Archived</Badge>}
+          </div>
+          {project.description && (
+            <p className="mt-0.5 line-clamp-2 max-w-2xl text-sm text-ink-muted">
+              {project.description}
+            </p>
           )}
         </div>
       </div>
 
-      <div className="flex gap-1 border-b border-slate-200">
+      <div className="flex gap-1 border-b border-line">
         {tabs.map((tab) => (
           <Link
             key={tab.href}
             href={tab.href}
-            className={`px-3 py-2 text-sm font-medium transition-colors ${
+            aria-current={tab.active ? "page" : undefined}
+            className={`-mb-px min-h-10 px-3 py-2 text-sm font-medium transition-colors ${
               tab.active
-                ? "border-b-2 border-slate-900 text-slate-900"
-                : "text-slate-500 hover:text-slate-700"
+                ? "border-b-2 border-accent text-ink"
+                : "border-b-2 border-transparent text-ink-muted hover:text-ink"
             }`}
           >
             {tab.label}
