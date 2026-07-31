@@ -71,11 +71,15 @@ async def engine() -> AsyncGenerator[AsyncEngine, None]:
     eng = _make_engine()
     async with eng.begin() as conn:
         if not _USING_SQLITE:
-            # CITEXT is an extension, not a built-in type — the
-            # production migration enables it once per database
-            # (see alembic/versions/202607291200_*), but a CI-provisioned
-            # Postgres service container starts without it.
+            # CITEXT and vector are extensions, not built-in types — the
+            # production migrations enable them once per database (see
+            # alembic/versions/202607291200_* and 202607290001_*), but a
+            # CI-provisioned Postgres service container starts without
+            # either, even when the image (pgvector/pgvector:pg16) bundles
+            # the extension files: CREATE EXTENSION still has to run once
+            # per database.
             await conn.execute(text("CREATE EXTENSION IF NOT EXISTS citext"))
+            await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
     yield eng
