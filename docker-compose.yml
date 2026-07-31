@@ -53,8 +53,10 @@ services:
 
   api:
     build:
-      context: ./apps/api
-      dockerfile: Dockerfile
+      # Context is the monorepo root (not apps/api) so the uv workspace's
+      # packages/schemas and packages/object_storage resolve.
+      context: .
+      dockerfile: apps/api/Dockerfile
     restart: unless-stopped
     env_file: .env
     # No --reload / source bind-mount here — this is the prod-safe base,
@@ -79,8 +81,9 @@ services:
 
   worker:
     build:
-      context: ./services/ingestion_worker
-      dockerfile: Dockerfile
+      # Same reason as api: needs the uv workspace root in context.
+      context: .
+      dockerfile: services/ingestion_worker/Dockerfile
     restart: unless-stopped
     env_file: .env
     # Dev-only source bind-mount lives in docker-compose.override.yml —

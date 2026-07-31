@@ -32,13 +32,17 @@ jobs:
       matrix:
         include:
           - image: api
-            context: ./apps/api
+            # Context is the monorepo root (not apps/api) so the uv
+            # workspace's packages/schemas and packages/object_storage
+            # resolve. See docker-compose.yml.
+            context: .
             dockerfile: ./apps/api/Dockerfile
           - image: web
             context: .
             dockerfile: ./apps/web/Dockerfile
           - image: worker
-            context: ./services/ingestion_worker
+            # Same reason as api: needs the uv workspace root in context.
+            context: .
             dockerfile: ./services/ingestion_worker/Dockerfile
     steps:
       - uses: actions/checkout@v4

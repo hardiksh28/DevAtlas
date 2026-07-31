@@ -1,4 +1,6 @@
-# Root build context is only used by apps/web/Dockerfile (pnpm workspace).
+# Root build context is shared by apps/web/Dockerfile (pnpm workspace),
+# apps/api/Dockerfile, and services/ingestion_worker/Dockerfile (both need
+# the uv workspace root to resolve packages/schemas + packages/object_storage).
 .git
 .venv
 node_modules
@@ -13,15 +15,9 @@ node_modules
 .DS_Store
 docs
 
-# Python-only members of the monorepo — apps/web's pnpm workspace never
-# reads these (only apps/web and packages/ui, per apps/web/package.json),
-# so shipping them into the build context just bloats every web image
-# build for nothing.
-apps/api
-services
-packages/schemas
+# Never read by any Dockerfile in this repo — apps/web's pnpm workspace
+# only touches apps/web and packages/ui.
 packages/taxonomy-data
-packages/object_storage
 **/.pytest_cache
 **/.mypy_cache
 **/.ruff_cache
