@@ -1,0 +1,73 @@
+# Example only — shows the shape the Taxonomy Service expects.
+# id must be globally unique and stable; renaming one breaks every
+# user_concept_mastery row that references it (ARCHITECTURE.md Section 7),
+# so treat these ids as append-only, never rename-in-place.
+#
+# Prerequisite resolution is scoped to this single file for V1 (see
+# curriculum-engine-v1.md, "Explicitly Deferred") — a cross-stack edge
+# like "requires python.functions" is not yet supported, so this stack's
+# foundational concepts stand on their own even where a real dependency
+# on Python fundamentals exists in practice.
+
+stack: fastapi
+stack_version: "0.115"
+
+concepts:
+  - id: fastapi.path_operations
+    severity: foundational
+    prerequisites: []
+    mastery_criteria:
+      - "Can explain the difference between a path parameter and a query parameter"
+      - "Can register a route for each of GET/POST/PUT/DELETE"
+    common_misconceptions:
+      - "Believing route order doesn't matter (a catch-all path can shadow a more specific one)"
+    docs:
+      - https://fastapi.tiangolo.com/tutorial/first-steps/
+
+  - id: fastapi.pydantic_models
+    severity: foundational
+    prerequisites: []
+    mastery_criteria:
+      - "Can define a request body model and explain what validation it gets for free"
+      - "Can explain why a response_model differs from the internal DB model"
+    common_misconceptions:
+      - "Assuming a Pydantic model enforces validation only on read, not on construction"
+    docs:
+      - https://fastapi.tiangolo.com/tutorial/body/
+
+  - id: fastapi.dependency_injection
+    severity: intermediate
+    prerequisites:
+      - fastapi.path_operations
+    mastery_criteria:
+      - "Can write a reusable `Depends()` dependency and explain why it beats copy-pasted logic"
+      - "Can explain dependency caching within a single request"
+    common_misconceptions:
+      - "Believing a dependency re-runs every time it's referenced within the same request"
+    docs:
+      - https://fastapi.tiangolo.com/tutorial/dependencies/
+
+  - id: fastapi.async_endpoints
+    severity: intermediate
+    prerequisites:
+      - fastapi.path_operations
+    mastery_criteria:
+      - "Can explain when an endpoint should be `async def` vs plain `def`"
+      - "Can identify a blocking call inside an async endpoint that would stall the event loop"
+    common_misconceptions:
+      - "Assuming making every endpoint `async def` is always faster, even if it calls blocking I/O"
+    docs:
+      - https://fastapi.tiangolo.com/async/
+
+  - id: fastapi.error_handling
+    severity: advanced
+    prerequisites:
+      - fastapi.dependency_injection
+      - fastapi.pydantic_models
+    mastery_criteria:
+      - "Can register a custom exception handler and explain why raising HTTPException directly from service code is avoided"
+      - "Can explain how a domain exception maps to an HTTP status code"
+    common_misconceptions:
+      - "Believing all error handling must happen inline in the route function"
+    docs:
+      - https://fastapi.tiangolo.com/tutorial/handling-errors/

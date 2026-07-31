@@ -128,16 +128,16 @@ Handles GitHub OAuth for sign-in only (`read:user`, `user:email` — nothing els
 Manages GitHub App installation, per-repository selection, and read-only token scoping — entirely separate from Auth's login tokens. Fetches only what a given task needs (current file, closely related files, config files, recent diffs) rather than the whole repository. Does not perform any write operations in V1 (no PRs opened, no commits made).
 
 **Curriculum Engine**
-Given a project goal and the learner's current mastery profile, deterministically traverses the taxonomy's prerequisite graph to produce milestone order — skipping already-mastered concepts, prioritizing ones flagged as weak. This module **decides what to teach next**; it never asks the LLM to invent a sequence.
+Given a project goal and the learner's current mastery profile, deterministically traverses the taxonomy's prerequisite graph to produce milestone order — skipping already-mastered concepts, prioritizing ones flagged as weak. This module **decides what to teach next**; it never asks the LLM to invent a sequence. Implemented — see [`curriculum-engine-v1.md`](./curriculum-engine-v1.md): deterministic sequencing (topological order + experience-level adaptation) is built, plus lazy, per-milestone LLM narration (explanation/exercises/quiz). "Current mastery profile" in this pass means the learner's declared experience level, not yet a cross-project `user_concept_mastery` record — that's still deferred to the Progress & Weakness Tracking module below.
 
 **Taxonomy & Concept Graph Service**
-The system of record for every canonical concept: prerequisites, mastery criteria, severity, recommended docs, common misconceptions, and which stacks/universal layer it belongs to. Owns the closed set of valid concept IDs. Accepts "unmapped evidence" flags from the Effort Evaluator and Review Engine for human/product review — it is the only thing allowed to evolve the taxonomy; the LLM never modifies it directly.
+The system of record for every canonical concept: prerequisites, mastery criteria, severity, recommended docs, common misconceptions, and which stacks/universal layer it belongs to. Owns the closed set of valid concept IDs. Accepts "unmapped evidence" flags from the Effort Evaluator and Review Engine for human/product review — it is the only thing allowed to evolve the taxonomy; the LLM never modifies it directly. Implemented — see [`curriculum-engine-v1.md`](./curriculum-engine-v1.md): concepts and their prerequisite edges are curated YAML (`packages/taxonomy-data/concepts/`), validated (no cycles, no dangling references) and loaded via `scripts/seed_taxonomy.py`. "Unmapped evidence" review flags are not yet built — that's tied to the Effort Evaluator/Review Engine, both still stubs.
 
 **Lesson Engine**
 Given a milestone, pulls the concept's deterministic metadata, the relevant global-corpus documentation, and the learner's profile, and asks the LLM to generate the *delivery* — explanation, project-specific examples, exercises, reflection questions. Caches the generic (non-personalized) portion of a lesson across users studying the same concept on the same stack, since that content doesn't vary by learner; only the codebase-specific example is generated per user.
 
 **Mentoring / Hint Ladder Engine**
-Executes the guided-independence ladder for any point a learner is stuck: concept explanation → guiding questions → progressively specific hints → doc pointers → attempt review → full reveal with reasoning. Every rung transition is gated by the Effort Evaluator, not by conversational persuasion — this module never advances the ladder because a user asked nicely or repeatedly.
+Executes the guided-independence ladder for any point a learner is stuck: concept explanation → guiding questions → progressively specific hints → doc pointers → attempt review → full reveal with reasoning. Every rung transition is gated by the Effort Evaluator, not by conversational persuasion — this module never advances the ladder because a user asked nicely or repeatedly. Partially implemented — see [`mentor-engine-v1.md`](./mentor-engine-v1.md): the conversational memory/prompting substrate (persistent per-project conversation, adaptive explanation, hints-not-answers, misconception detection) is built. The Effort-Evidence-gated rung state machine described above is **not** — hints-not-answers is currently a prompt/response contract, not an enforced gate, because the Effort & Evidence Evaluator it depends on is still a stub. See that doc's Section 7 for the trigger to close this gap.
 
 **Effort & Evidence Evaluator**
 Collects structured signals (submission count, revision diffs, hint-request frequency, doc views, whether prior feedback was actually addressed, self-reported test outcomes) and asks the LLM to synthesize a judgment — *"has this learner demonstrated genuine effort, and what's the next best intervention?"* — from that structured evidence, never from raw chat text alone. This isolation is a deliberate security property: a user cannot argue their way past the gate by wording a chat message persuasively, because the gate doesn't read the chat message directly.
@@ -150,8 +150,8 @@ Owns the user-scoped mastery profile: one evolving record per (user, concept) pa
 
 **Knowledge System**
 Two independent stores, matched to two different problems:
-- *Global corpus* — official documentation for curated stacks, ingested once, version-aware, shared by every user, refreshed on a cadence matched to each framework's release velocity.
-- *Project corpus*, split further: **live structured state** (roadmap, current milestone, current code, git metadata — fetched directly from Postgres/the repo, never embedded, because it's small, exact, and known) vs. **retrieval-worthy content** (future user uploads, large repos — deferred past V1, capped to context-fitting scope for now).
+- *Global corpus* — official documentation for curated stacks, ingested once, version-aware, shared by every user, refreshed on a cadence matched to each framework's release velocity. Still an unbuilt stub as of this pass.
+- *Project corpus*, split further: **live structured state** (roadmap, current milestone, current code, git metadata — fetched directly from Postgres/the repo, never embedded, because it's small, exact, and known) vs. **retrieval-worthy content** — the *Documentation Ingestion Engine* (see [`ingestion-engine-v1.md`](./ingestion-engine-v1.md)) ingests user-uploaded Markdown/PDFs, public GitHub repos, and documentation websites into validated, cleaned, chunked, metadata-tagged text, and the *RAG Knowledge Engine* (see [`rag-engine-v1.md`](./rag-engine-v1.md)) embeds that text and serves semantic/hybrid retrieval and grounded question-answering over it (`/search`, `/ask`). Not yet wired into the Mentoring/Lesson engines below — this is the retrieval capability, not yet the teaching loop consuming it.
 
 **Stack Support Tier Manager**
 Maintains the curated 🟢/🟡/🔴 matrix per stack (and per major version, since a stack's tier isn't uniform across its own version history). V1: curated by the product/engineering team. Future: backed by a standardized benchmark suite (curriculum generation, doc Q&A, review quality, debugging assistance, architecture recommendations) re-run periodically so tiers become evidence-driven rather than a one-time guess.
@@ -203,7 +203,7 @@ sequenceDiagram
 **Other key flows:**
 - **Auth/onboarding:** Client → Auth Module → GitHub OAuth (identity only) → internal user record created → no repo permissions requested yet.
 - **Repo connection (separate, contextual):** Client → Repository Integration → GitHub App install flow (per-repo, read-only) → token stored, linked to the specific project, not the user account.
-- **Roadmap generation:** Curriculum Engine reads Taxonomy Service (prerequisite graph) + Progress Tracker (what's already mastered) → deterministic milestone list → Lesson Engine narrates each milestone via LLM Gateway.
+- **Roadmap generation:** Curriculum Engine reads Taxonomy Service (prerequisite graph) + Progress Tracker (what's already mastered) → deterministic milestone list → Lesson Engine narrates each milestone via LLM Gateway. Implemented — see [`curriculum-engine-v1.md`](./curriculum-engine-v1.md): the Progress Tracker read is currently just the learner's declared experience level (Progress & Weakness Tracking is still a stub), and narration is a lazy, per-milestone call the Curriculum Engine itself makes directly (no separate Lesson Engine process yet).
 - **Documentation retrieval:** any module needing context queries in order — structured live state (direct DB read) → project corpus (if any retrieval-worthy content exists) → global corpus (semantic search, version-filtered to the project's declared stack version) → results merged and passed to the LLM Gateway as context.
 - **Cost accounting:** every LLM Gateway call reports its operation type and token cost to the Cost & Abuse Control module, which updates the Redis-backed usage ledger in the same request path.
 
@@ -251,6 +251,7 @@ devatlas/
 │   └── ingestion_worker/          # queue-consuming worker — first candidate to extract
 ├── packages/
 │   ├── schemas/                   # shared Pydantic/TS types: taxonomy shape, review comment shape, etc.
+│   ├── object_storage/             # shared async object-storage client (apps/api + ingestion_worker)
 │   ├── taxonomy-data/              # versioned concept taxonomy content (the curated curriculum itself)
 │   └── ui/                        # shared React components
 ├── infra/
@@ -277,7 +278,7 @@ Grouped by domain rather than listed flat, since the relationships matter more t
 `repository_connections` (per-project, references the GitHub App installation + selected repo, read-only scope), separate from `oauth_tokens` above — enforcing the auth/authorization separation at the schema level, not just in process.
 
 **Curriculum & Taxonomy**
-`concepts` (canonical ID, stack or "universal", severity, mastery criteria, prerequisites as a self-referencing edge table), `stack_versions` (per-framework version awareness), `roadmaps` and `milestones` (generated per project, referencing `concepts`).
+`concepts` (canonical ID, stack or "universal", severity, mastery criteria, prerequisites as a self-referencing edge table), `stack_versions` (per-framework version awareness), `roadmaps` and `milestones` (generated per project, referencing `concepts`). Implemented — see [`curriculum-engine-v1.md`](./curriculum-engine-v1.md). `stack_versions` is folded into `concepts.stack_version` rather than a separate table (not enough distinct per-stack-version metadata yet to justify one).
 
 **Progress & Mastery** *(user-scoped, not project-scoped — this is the one deliberate exception to "most state lives under a project")*
 `user_concept_mastery` (user_id, concept_id, confidence, resolution_state, first_detected, last_observed), `evidence_log` (structured effort signals feeding both the Effort Evaluator and analytics — append-only).
@@ -286,7 +287,7 @@ Grouped by domain rather than listed flat, since the relationships matter more t
 `reviews`, `review_comments` (line/region-anchored, or submission-relative for pasted code), `review_discussion_threads` (each gated through the same evidence log as everything else).
 
 **Knowledge**
-`global_documents` (metadata: source, stack, version, last_refreshed), `global_embeddings` (pgvector column, one shared index — not duplicated per project), `project_context` (the Layer 2A structured fields, not embedded), and a currently-empty `project_documents`/`project_embeddings` pair reserved for the deferred ingestion feature.
+`global_documents` (metadata: source, stack, version, last_refreshed), `global_embeddings` (pgvector column, one shared index — not duplicated per project), `project_context` (the Layer 2A structured fields, not embedded). `project_documents`, `ingestion_jobs`, and `project_document_chunks` are implemented — see [`ingestion-engine-v1.md`](./ingestion-engine-v1.md). `project_embeddings` (pgvector, HNSW-indexed, one row per chunk) is now implemented too — see [`rag-engine-v1.md`](./rag-engine-v1.md).
 
 **Platform**
 `stack_support_tiers` (stack, version, tier, last_evaluated), `usage_ledger` (user_id, operation_type, cost_units, timestamp — read by Cost & Abuse Control, written by the LLM Gateway).
@@ -332,9 +333,13 @@ Grouped by domain rather than listed flat, since the relationships matter more t
 ## Scalability & Growth Path
 
 **What's deliberately deferred, and the trigger for revisiting each:**
-- **Arbitrary document/repo ingestion** → once the core mentoring loop is validated and the security work (SSRF protection, sandboxed parsing, per-user quotas) is funded as its own effort.
+- **Arbitrary document/repo ingestion** → implemented ([`ingestion-engine-v1.md`](./ingestion-engine-v1.md)): SSRF protection, per-project quotas, and per-source size/count ceilings are built.
+- **Retrieval/RAG over the ingested corpus** → implemented ([`rag-engine-v1.md`](./rag-engine-v1.md)): pgvector semantic search, Postgres full-text keyword search, RRF-fused hybrid retrieval, and Ollama-backed grounded answering (`/search`, `/ask`). Not yet connected to the Mentoring/Lesson engines below, and no automated groundedness/citation verification yet — see that doc's Section 13.
+- **Curriculum & Roadmap Generation** → implemented ([`curriculum-engine-v1.md`](./curriculum-engine-v1.md)): deterministic prerequisite-graph sequencing, experience-level adaptation, regenerate-without-losing-progress, and lazy per-milestone LLM narration (explanation/exercises/quiz), optionally grounded in the project's own ingested docs via the RAG engine above. Cross-project mastery, cross-stack prerequisite edges, and eager/background content pre-generation are explicitly deferred — see that doc's Section 13 for each trigger.
+- **Mentoring conversational loop** → implemented ([`mentor-engine-v1.md`](./mentor-engine-v1.md)): persistent per-project conversation with sliding-window + rolling-summary memory, adaptive prompting (reuses `Roadmap.experience_level`), hints-not-answers and misconception detection as a prompt/response contract, optional RAG grounding. The Effort-Evidence-gated hint-ladder rung state machine this module's full design calls for is explicitly **not** built yet — see that doc's Section 7 and its own "Explicitly deferred" for the trigger (the Effort & Evidence Evaluator module shipping).
+- **Interactive Learning Workspace** → implemented ([`interactive-workspace-v1.md`](./interactive-workspace-v1.md)): a per-project in-browser IDE (Monaco, file tree, tabs, split layout, autosave with conflict detection, workspace persistence) that renders the already-implemented Curriculum and Mentoring engines above as its Lesson Panel and AI Chat, adding no new backend surface for either. Server-side code execution (real terminal command execution, dev-server-backed live preview for non-static stacks) is explicitly **not** built — this is the same "no code execution in V1" line drawn above, not a new one; Live Preview instead ships real for static HTML/CSS/JS via a sandboxed client-side iframe, and the terminal is real UI wired up with execution deferred. See that doc's Section 8 for the trigger.
 - **Full repository semantic indexing** (cross-file retrieval, architecture-aware reasoning) → once context-window-limited analysis is visibly the bottleneck in review quality.
-- **Dedicated vector database** → once `pgvector` query latency or corpus size (driven by ingestion shipping) becomes measurable pain, not before.
+- **Dedicated vector database** → once `pgvector` query latency or corpus size (now that ingestion + embedding both actually ship) becomes measurable pain, not before.
 - **Extracting the ingestion worker into its own service** → the natural first extraction, since it's already queue-isolated; do this before extracting anything pedagogy-related.
 - **Real GitHub PR integration** (write access, opening actual PRs) → once collaborative/team features become a priority, which is a different product phase than solo mentoring.
 - **Automated, benchmark-driven stack tier evaluation** → once there are enough curated stacks that manual curation is visibly the bottleneck, not before.

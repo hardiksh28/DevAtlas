@@ -37,6 +37,14 @@ class LLMGateway:
         )
         return result["response"]
 
+    async def embed(self, texts: list[str]) -> list[list[float]]:
+        # No graph involved — embedding is a single model call with no
+        # context-assembly step of its own (the RAG Knowledge Engine's
+        # retrieval/context_builder.py is what *uses* embeddings; it
+        # isn't a stage inside producing one). Goes straight to the
+        # provider, same as `generate` would if it had no graph either.
+        return await self._provider.embed(texts)
+
 
 @lru_cache
 def get_llm_gateway() -> LLMGateway:

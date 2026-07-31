@@ -27,6 +27,8 @@ venv/
 .ruff_cache/
 .coverage
 htmlcov/
+*.db
+*.sqlite3
 
 # --- Docker / infra ---
 infra/docker/postgres/data/

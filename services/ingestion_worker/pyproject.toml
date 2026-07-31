@@ -9,7 +9,33 @@ dependencies = [
     "sqlalchemy>=2.0.35",
     "asyncpg>=0.30.0",
     "pydantic-settings>=2.5.2",
+    # Fetches GitHub API/raw content and crawls documentation websites —
+    # always through pipeline/fetch.py's SSRF-safe wrapper, never bare.
+    "httpx>=0.27.0",
+    # PDF text extraction (pipeline/parsers/pdf.py).
+    "pypdf>=5.0.0",
+    # HTML boilerplate stripping for website ingestion
+    # (pipeline/parsers/website.py) — stdlib html.parser backend, no
+    # lxml dependency needed at this scale.
+    "beautifulsoup4>=4.12.0",
+    # Markdown front-matter parsing (pipeline/parsers/markdown.py).
+    "pyyaml>=6.0.2",
+    # pgvector Core column type for the project_embeddings Table def in
+    # db.py — a type mapper, not a driver; asyncpg still does the actual
+    # wire protocol work.
+    "pgvector>=0.3.5",
+    # Cross-boundary shapes shared with apps/api (status enums, source
+    # types) — see packages/schemas. Object storage client shared the
+    # same way — see packages/object_storage. Neither pulls in any
+    # app.* code, so this doesn't compromise the "never import from
+    # apps/api" extraction boundary in settings.py.
+    "schemas",
+    "object-storage",
 ]
+
+[tool.uv.sources]
+schemas = { workspace = true }
+object-storage = { workspace = true }
 
 [dependency-groups]
 dev = [
@@ -24,3 +50,17 @@ package = false
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
+[tool.ruff.lint]
+# BLE001 (no bare `except Exception`) is right in general, but this
+# worker's whole job is fetching/parsing content it doesn't control
+# (third-party PDFs via pypdf, arbitrary HTML via bs4, network calls
+# during a best-effort robots.txt fetch or a many-page crawl) — the
+# three call sites that trigger it are deliberate, already-logged,
+# catch-all boundaries (see pipeline/parsers/pdf.py and
+# pipeline/parsers/website.py), not carelessness. Same category of
+# call as apps/api ignoring B008 for its own idiomatic FastAPI pattern.
+ignore = ["BLE001"]

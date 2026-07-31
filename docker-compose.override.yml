@@ -1,0 +1,64 @@
+# Auto-merged by `docker compose up` whenever this file is present — no -f
+# flag needed. Adds dev-only live-reload on top of docker-compose.yml's
+# prod-safe base. Production deploys use docker-compose.prod.yml instead
+# (`docker compose -f docker-compose.yml -f docker-compose.prod.yml up`),
+# which never includes this file.
+services:
+  api:
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./apps/api:/app
+      - api_venv:/app/.venv
+    depends_on:
+      minio:
+        condition: service_healthy
+
+  worker:
+    volumes:
+      - ./services/ingestion_worker:/app
+      - worker_venv:/app/.venv
+    depends_on:
+      minio:
+        condition: service_healthy
+
+  # S3-API-compatible object storage, dev-only — see docker-compose.yml's
+  # comment on why this doesn't live in the prod-safe base file. Production
+  # points OBJECT_STORAGE_ENDPOINT_URL at real S3 instead.
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      MINIO_ROOT_USER: ${OBJECT_STORAGE_ACCESS_KEY_ID}
+      MINIO_ROOT_PASSWORD: ${OBJECT_STORAGE_SECRET_ACCESS_KEY}
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    ports:
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:9001:9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # One-shot: creates the app's bucket on a fresh MinIO volume, then
+  # exits — `docker compose up` never needs a manual "create the
+  # bucket" step for local dev.
+  minio-init:
+    image: minio/mc:latest
+    env_file: .env
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 ${OBJECT_STORAGE_ACCESS_KEY_ID} ${OBJECT_STORAGE_SECRET_ACCESS_KEY} &&
+      mc mb --ignore-existing local/${OBJECT_STORAGE_BUCKET}
+      "
+    depends_on:
+      minio:
+        condition: service_healthy
+
+volumes:
+  api_venv:
+  worker_venv:
+  minio_data:

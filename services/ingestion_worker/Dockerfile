@@ -15,4 +15,8 @@ RUN addgroup --system app && adduser --system --ingroup app app
 COPY --from=builder /app /app
 ENV PATH="/app/.venv/bin:$PATH" PYTHONUNBUFFERED=1
 USER app
+# arq's own --check flag reads the health-check key it writes to Redis
+# (WorkerSettings.health_check_interval) — no separate HTTP endpoint needed.
+HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
+  CMD arq worker.WorkerSettings --check
 CMD ["arq", "worker.WorkerSettings"]

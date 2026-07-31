@@ -17,6 +17,18 @@ concepts:
     docs:
       - https://docs.python.org/3/tutorial/introduction.html
 
+  - id: python.functions
+    severity: foundational
+    prerequisites:
+      - python.variables_and_types
+    mastery_criteria:
+      - "Can explain the difference between a parameter and an argument"
+      - "Can explain why a function without an explicit `return` returns `None`"
+    common_misconceptions:
+      - "Believing a function without `return` returns nothing at all, rather than `None`"
+    docs:
+      - https://docs.python.org/3/tutorial/controlflow.html#defining-functions
+
   - id: python.async_await
     severity: intermediate
     prerequisites:

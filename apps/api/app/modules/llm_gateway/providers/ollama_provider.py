@@ -24,3 +24,13 @@ class OllamaProvider(LLMProvider):
             prompt=prompt,
         )
         return response["response"]
+
+    async def embed(self, texts: list[str], *, model: str | None = None) -> list[list[float]]:
+        # Ollama's /api/embed is already batch-capable (input: str |
+        # Sequence[str]) — one HTTP call regardless of len(texts),
+        # not len(texts) round-trips.
+        response = await self._client.embed(
+            model=model or settings.ollama_embedding_model,
+            input=texts,
+        )
+        return response["embeddings"]

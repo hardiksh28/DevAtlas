@@ -3,6 +3,7 @@
 import {
   ArrowRight,
   BookOpen,
+  Code2,
   FileText,
   GitPullRequest,
   Map,
@@ -13,7 +14,6 @@ import {
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
-import { WorkspacePreview } from "@/components/projects/WorkspacePreview";
 import { Badge } from "@/components/ui/Badge";
 import { useProject } from "@/hooks/useProjects";
 
@@ -129,7 +129,29 @@ export default function ProjectOverviewPage() {
         </div>
       </section>
 
-      <WorkspacePreview />
+      {/* The one real, always-available action on this page — Monaco,
+          file explorer, lesson panel, and mentor chat, all live. */}
+      <section
+        aria-labelledby="workspace-heading"
+        className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-line bg-surface p-5"
+      >
+        <div>
+          <h2 id="workspace-heading" className="flex items-center gap-2 text-sm font-semibold text-ink-secondary">
+            <Code2 className="h-4 w-4" aria-hidden="true" />
+            Interactive workspace
+          </h2>
+          <p className="mt-1 max-w-xl text-sm text-ink-muted">
+            Editor, file explorer, lesson panel, and mentor chat — open this project&apos;s workspace.
+          </p>
+        </div>
+        <Link
+          href={`/projects/${project.id}/workspace`}
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-hover"
+        >
+          Open workspace
+          <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+        </Link>
+      </section>
     </div>
   );
 }

@@ -1,0 +1,28 @@
+# Root build context is only used by apps/web/Dockerfile (pnpm workspace).
+.git
+.venv
+node_modules
+**/node_modules
+**/.next
+**/__pycache__
+**/*.pyc
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+docs
+
+# Python-only members of the monorepo — apps/web's pnpm workspace never
+# reads these (only apps/web and packages/ui, per apps/web/package.json),
+# so shipping them into the build context just bloats every web image
+# build for nothing.
+apps/api
+services
+packages/schemas
+packages/taxonomy-data
+packages/object_storage
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/*.egg-info

@@ -100,3 +100,14 @@ cd apps/api && uv run ruff check . && uv run mypy app --ignore-missing-imports &
 ```
 
 CI (`.github/workflows/ci.yml`) runs all of the above on every PR.
+
+## Further reading
+
+| Doc | Covers |
+|---|---|
+| [`docs/architecture/ARCHITECTURE.md`](docs/architecture/ARCHITECTURE.md) | Module boundaries, data flow, stack choices and why |
+| [`docs/architecture/API.md`](docs/architecture/API.md) | Route map, auth model, error shape, pagination, rate limiting |
+| [`docs/architecture/DEPLOYMENT.md`](docs/architecture/DEPLOYMENT.md) | Production topology, security, observability, backups |
+| [`docs/architecture/RELEASE_CHECKLIST.md`](docs/architecture/RELEASE_CHECKLIST.md) | What to check before and during every release |
+| [`docs/architecture/LAUNCH_READINESS_AUDIT.md`](docs/architecture/LAUNCH_READINESS_AUDIT.md) | Full pre-launch audit findings and remaining tech debt |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Module conventions, pre-PR checks, commit/PR expectations |

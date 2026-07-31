@@ -1,0 +1,69 @@
+# Example only — shows the shape the Taxonomy Service expects.
+# id must be globally unique and stable; renaming one breaks every
+# user_concept_mastery row that references it (ARCHITECTURE.md Section 7),
+# so treat these ids as append-only, never rename-in-place.
+
+stack: react
+stack_version: "18"
+
+concepts:
+  - id: react.components_and_props
+    severity: foundational
+    prerequisites: []
+    mastery_criteria:
+      - "Can explain why props flow one direction (parent to child)"
+      - "Can split a UI into components along a sensible boundary"
+    common_misconceptions:
+      - "Believing a child component can modify a prop it received directly"
+    docs:
+      - https://react.dev/learn/passing-props-to-a-component
+
+  - id: react.state_with_use_state
+    severity: foundational
+    prerequisites:
+      - react.components_and_props
+    mastery_criteria:
+      - "Can explain why mutating state directly doesn't trigger a re-render"
+      - "Can explain why state updates inside the same event handler can appear batched"
+    common_misconceptions:
+      - "Assuming `setState` mutates the variable in place, like a normal assignment"
+    docs:
+      - https://react.dev/learn/state-a-components-memory
+
+  - id: react.effects_with_use_effect
+    severity: intermediate
+    prerequisites:
+      - react.state_with_use_state
+    mastery_criteria:
+      - "Can explain when an effect's dependency array causes it to re-run"
+      - "Can identify a missing cleanup function that would leak a subscription"
+    common_misconceptions:
+      - "Using `useEffect` to derive a value that could just be computed during render"
+    docs:
+      - https://react.dev/learn/synchronizing-with-effects
+
+  - id: react.state_lifting
+    severity: intermediate
+    prerequisites:
+      - react.state_with_use_state
+      - react.components_and_props
+    mastery_criteria:
+      - "Can identify when two sibling components need a shared ancestor to own their common state"
+      - "Can refactor duplicated local state into a single lifted source of truth"
+    common_misconceptions:
+      - "Reaching for a global store before trying to lift state to the nearest common parent"
+    docs:
+      - https://react.dev/learn/sharing-state-between-components
+
+  - id: react.performance_memoization
+    severity: advanced
+    prerequisites:
+      - react.effects_with_use_effect
+      - react.state_lifting
+    mastery_criteria:
+      - "Can explain what problem `useMemo`/`useCallback`/`memo` each solve and when none of them are needed"
+      - "Can identify an unnecessary re-render caused by a new function/object identity passed as a prop"
+    common_misconceptions:
+      - "Wrapping every value and function in useMemo/useCallback pre-emptively, regardless of measured cost"
+    docs:
+      - https://react.dev/reference/react/useMemo

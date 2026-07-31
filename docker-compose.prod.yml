@@ -1,0 +1,66 @@
+# Production overlay — additive services only (nginx, SSL, monitoring,
+# backups). Run alongside the base file, never alone:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+# (docker-compose.override.yml is NOT part of that command, so none of its
+# dev-only bind-mounts/--reload apply here.)
+#
+# Requires in .env: API_DOMAIN, WEB_DOMAIN, CERTBOT_EMAIL (see
+# docs/architecture/DEPLOYMENT.md for the SSL bootstrap steps — first-time
+# cert issuance is a one-time manual command, not automated here).
+services:
+  nginx:
+    image: nginx:1.27-alpine
+    restart: always
+    env_file: .env
+    environment:
+      API_DOMAIN: ${API_DOMAIN}
+      WEB_DOMAIN: ${WEB_DOMAIN}
+    volumes:
+      - ./infra/nginx/templates:/etc/nginx/templates:ro
+      - certbot_certs:/etc/letsencrypt:ro
+      - certbot_webroot:/var/www/certbot:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - api
+      - web
+
+  certbot:
+    image: certbot/certbot:latest
+    restart: unless-stopped
+    volumes:
+      - certbot_certs:/etc/letsencrypt
+      - certbot_webroot:/var/www/certbot
+    # Renewal loop only — certbot's own logic is a no-op unless a cert is
+    # within its renewal window, so this never needs its own scheduling
+    # code. First-time issuance is a separate manual `certonly` run (docs).
+    entrypoint: >
+      /bin/sh -c "trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot; sleep 12h; done"
+
+  prometheus:
+    image: prom/prometheus:latest
+    restart: always
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    # Bound to localhost only — reachable via SSH tunnel or the nginx
+    # host, not exposed publicly. Add a Grafana service in front of it
+    # if/when dashboards are actually needed (skipped for now — YAGNI).
+    ports:
+      - "127.0.0.1:9090:9090"
+
+  backup:
+    build:
+      context: ./infra/docker/backup
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  certbot_certs:
+  certbot_webroot:
+  prometheus_data:

@@ -54,6 +54,16 @@ export default function ProjectLayout({ children }: { children: ReactNode }) {
 
   const colors = PROJECT_COLOR_CLASSES[project.color];
   const basePath = `/projects/${project.id}`;
+
+  // The workspace is a full-bleed VS-Code-style surface (Monaco, file
+  // tree, resizable panels) — it needs the full viewport, not this
+  // layout's padded max-w-5xl reading column + tab strip. AppShell's
+  // <main> has no padding of its own, so skipping this wrapper is the
+  // only change needed to go full-bleed.
+  if (pathname.endsWith("/workspace")) {
+    return <>{children}</>;
+  }
+
   const tabs = [
     { href: basePath, label: "Overview", active: pathname === basePath },
     { href: `${basePath}/settings`, label: "Settings", active: pathname.endsWith("/settings") },

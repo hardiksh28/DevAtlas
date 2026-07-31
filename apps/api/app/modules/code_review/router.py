@@ -1,28 +1,85 @@
 """Code Review Engine — router.
 
-Three-layer PR-style review: inline comments, summary, gated discussion.
+Three linked artifacts per review (ARCHITECTURE.md Section 3): inline
+comments, a holistic summary + score, and review history. The
+interactive discussion thread per comment is deferred — see
+models.py's docstring for why.
 
-This module is a stub: the route surface will grow as the module's
-responsibilities (see docs/architecture/ARCHITECTURE.md, Section 3) are
-implemented. Keeping an explicit, empty-but-real router per module from
-day one means every module has an identical shape — new contributors
-never have to guess where a given feature's routes should live.
+Two routers, same split as mentoring's own router.py: `router`
+(`/v1/code-review`) stays a pre-existing stub with no routes of its
+own. `review_router` (`/v1/projects/{project_id}/reviews`) is the real
+surface, nested under its owning project.
 """
-from fastapi import APIRouter
-from schemas import ReviewComment
+
+import uuid
+
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.core.database import get_db
+from app.modules.code_review import service
+from app.modules.code_review.schemas import (
+    ReviewDetailRead,
+    ReviewListResponse,
+    ReviewSummaryRead,
+    SubmitReviewRequest,
+)
+from app.modules.cost_control.limits import llm_rate_limit
+from app.modules.llm_gateway.gateway import LLMGateway, get_llm_gateway
+from app.modules.projects.dependencies import get_owned_project
+from app.modules.projects.models import Project
 
 router = APIRouter(prefix="/v1/code-review", tags=["Code Review Engine"])
 
+review_router = APIRouter(
+    prefix="/v1/projects/{project_id}/reviews", tags=["Code Review Engine — Reviews"]
+)
 
-@router.get("/_example-comment-shape", response_model=ReviewComment)
-async def example_comment_shape() -> ReviewComment:
-    """Not a real endpoint — exists only to prove `schemas` (packages/schemas)
-    is actually installed and importable via the uv workspace, not just
-    present on disk. Remove once a real review endpoint uses ReviewComment.
-    """
-    return ReviewComment(
-        file_path="src/app.py",
-        line_start=12,
-        line_end=14,
-        body="What happens here if `items` is empty?",
+
+@review_router.post(
+    "",
+    response_model=ReviewDetailRead,
+    dependencies=[llm_rate_limit("code_review", times=20, seconds=3600)],
+)
+async def submit_review(
+    payload: SubmitReviewRequest,
+    project: Project = Depends(get_owned_project),
+    db: AsyncSession = Depends(get_db),
+    gateway: LLMGateway = Depends(get_llm_gateway),
+) -> ReviewDetailRead:
+    review = await service.submit_review(
+        db,
+        gateway,
+        project_id=project.id,
+        milestone_id=payload.milestone_id,
+        code=payload.code,
+        language=payload.language,
+        file_path=payload.file_path,
     )
+    return ReviewDetailRead.from_model(review)
+
+
+@review_router.get("", response_model=ReviewListResponse)
+async def list_reviews(
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    project: Project = Depends(get_owned_project),
+    db: AsyncSession = Depends(get_db),
+) -> ReviewListResponse:
+    rows, total = await service.list_reviews(db, project.id, limit, offset)
+    return ReviewListResponse(
+        items=[ReviewSummaryRead.from_model(review, count) for review, count in rows],
+        total=total,
+        limit=limit,
+        offset=offset,
+    )
+
+
+@review_router.get("/{review_id}", response_model=ReviewDetailRead)
+async def get_review(
+    review_id: uuid.UUID,
+    project: Project = Depends(get_owned_project),
+    db: AsyncSession = Depends(get_db),
+) -> ReviewDetailRead:
+    review = await service.get_review(db, project_id=project.id, review_id=review_id)
+    return ReviewDetailRead.from_model(review)

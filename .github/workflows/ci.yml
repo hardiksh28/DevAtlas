@@ -92,6 +92,14 @@ jobs:
     defaults:
       run:
         working-directory: services/ingestion_worker
+    env:
+      # WorkerConfig (settings.py) requires these to construct at import
+      # time — the pipeline tests below are pure-function (no real
+      # Postgres/Redis needed), but importing db.py/worker.py still
+      # needs *some* value. Not real secrets, same reasoning as the api
+      # job above.
+      DATABASE_URL: postgresql+asyncpg://test:test@localhost:5432/test
+      REDIS_URL: redis://localhost:6379/0
     steps:
       - uses: actions/checkout@v4
 
@@ -102,3 +110,4 @@ jobs:
       - run: uv sync
 
       - run: uv run ruff check .
+      - run: uv run pytest --no-header -q

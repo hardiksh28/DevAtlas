@@ -41,16 +41,34 @@ services:
     ports:
       - "11434:11434"
 
+  # S3-API-compatible object storage for local dev only — the Documentation
+  # Ingestion Engine's file storage backend (uploaded markdown/PDFs, fetched
+  # GitHub/website content) needs *something* S3-compatible to point at
+  # locally. Real S3 (or another managed provider) is what production
+  # actually points OBJECT_STORAGE_ENDPOINT_URL at, so this service (and
+  # api/worker's dependency on it) lives in docker-compose.override.yml —
+  # dev-only, auto-merged by plain `docker compose up`, never present in
+  # the `-f docker-compose.yml -f docker-compose.prod.yml` production
+  # command. See docs/architecture/ingestion-engine-v1.md Section 8.
+
   api:
     build:
       context: ./apps/api
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file: .env
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    # No --reload / source bind-mount here — this is the prod-safe base,
+    # runs the image built by Dockerfile as-is. Dev-only live-reload lives
+    # in docker-compose.override.yml, which `docker compose up` picks up
+    # automatically without any -f flag.
     volumes:
-      - ./apps/api:/app
-      - api_venv:/app/.venv
+      # Curated concept taxonomy content (see packages/taxonomy-data and
+      # docs/architecture/curriculum-engine-v1.md) — read-only, since
+      # only scripts/seed_taxonomy.py (run inside this container) reads
+      # it; nothing here ever writes back to the host checkout. Not part
+      # of the image build context (that's ./apps/api only), so this
+      # mount is needed in every environment, not just dev.
+      - ./packages/taxonomy-data:/packages/taxonomy-data:ro
     ports:
       - "8000:8000"
     depends_on:
@@ -65,9 +83,8 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file: .env
-    volumes:
-      - ./services/ingestion_worker:/app
-      - worker_venv:/app/.venv
+    # Dev-only source bind-mount lives in docker-compose.override.yml —
+    # see the `api` service's comment above for why.
     depends_on:
       postgres:
         condition: service_healthy
@@ -85,11 +102,10 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - api
+      api:
+        condition: service_healthy
 
 volumes:
   postgres_data:
   redis_data:
   ollama_data:
-  api_venv:
-  worker_venv:

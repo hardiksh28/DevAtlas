@@ -24,13 +24,36 @@ dependencies = [
     "ollama>=0.3.3",
     "httpx>=0.27.0",
     "schemas",
+    "object-storage",
+    # FastAPI's File()/UploadFile (knowledge/router.py's upload endpoint)
+    # parses multipart bodies via python-multipart under the hood —
+    # without it, FastAPI raises at request time, not import time, the
+    # first time *any* request anywhere in the app hits a form/file
+    # dependency.
+    "python-multipart>=0.0.12",
     "argon2-cffi>=23.1.0",
     "pyjwt>=2.9.0",
     "email-validator>=2.2.0",
+    # Enqueues ingestion jobs onto the same Redis-backed queue
+    # services/ingestion_worker consumes (app/core/queue.py) — arq's own
+    # client (`create_pool`/`ArqRedis`), not the plain redis-py client in
+    # app/core/redis.py, is what knows how to serialize a job correctly.
+    "arq>=0.26.0",
+    # Parses packages/taxonomy-data/concepts/*.yaml (Taxonomy Service's
+    # curated content) — same library services/ingestion_worker already
+    # uses to parse frontmatter/config, kept as a direct dependency here
+    # too since apps/api does its own parsing at seed time (see
+    # scripts/seed_taxonomy.py), not via the worker.
+    "pyyaml>=6.0.2",
+    # Exposes GET /metrics (request count/latency by route+status) for
+    # Prometheus to scrape — see docker-compose.prod.yml's `prometheus`
+    # service. One-line instrumentation rather than hand-rolled counters.
+    "prometheus-fastapi-instrumentator>=7.0.0",
 ]
 
 [tool.uv.sources]
 schemas = { workspace = true }
+object-storage = { workspace = true }
 
 [dependency-groups]
 dev = [
