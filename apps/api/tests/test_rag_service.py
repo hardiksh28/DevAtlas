@@ -115,7 +115,7 @@ class TestAnswerQuestion:
         redis = FakeCacheRedis()
 
         result = await rag_service.answer_question(
-            db_session, gateway, redis, project_id=project.id, question="What Node version?", mode="keyword"
+            db_session, gateway, redis, project_id=project.id, question="What Node install?", mode="keyword"
         )
 
         assert result.answer == "You need Node 20."
@@ -131,10 +131,10 @@ class TestAnswerQuestion:
         redis = FakeCacheRedis()
 
         first = await rag_service.answer_question(
-            db_session, gateway, redis, project_id=project.id, question="Node version?", mode="keyword"
+            db_session, gateway, redis, project_id=project.id, question="Node install?", mode="keyword"
         )
         second = await rag_service.answer_question(
-            db_session, gateway, redis, project_id=project.id, question="Node version?", mode="keyword"
+            db_session, gateway, redis, project_id=project.id, question="Node install?", mode="keyword"
         )
 
         assert first.cached is False

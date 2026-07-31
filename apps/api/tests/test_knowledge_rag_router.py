@@ -131,7 +131,7 @@ class TestAskEndpoint:
 
         resp = await client.post(
             f"/v1/projects/{project_id}/documents/ask",
-            json={"question": "What Node version is required?", "mode": "keyword"},
+            json={"question": "What Node is required?", "mode": "keyword"},
         )
         assert resp.status_code == 200
         body = resp.json()
@@ -160,7 +160,7 @@ class TestAskEndpoint:
         project_id = uuid.UUID(await _create_project(client))
         await seed_chunk(db_session, project_id, user_id, content="Node 20 install guide.")
 
-        payload = {"question": "Node version?", "mode": "keyword"}
+        payload = {"question": "Node install?", "mode": "keyword"}
         first = await client.post(f"/v1/projects/{project_id}/documents/ask", json=payload)
         second = await client.post(f"/v1/projects/{project_id}/documents/ask", json=payload)
 

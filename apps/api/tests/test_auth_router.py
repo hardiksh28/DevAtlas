@@ -20,7 +20,13 @@ EMAIL_LOGGER = "app.auth.email"
 
 
 def _extract_token(caplog: pytest.LogCaptureFixture) -> str:
-    for record in caplog.records:
+    # caplog accumulates records for the whole test, not just what's
+    # logged inside a `with caplog.at_level(...)` block — a token-bearing
+    # email logged earlier (e.g. the verify-email link sent at
+    # registration) stays in caplog.records. The most recently logged
+    # email is always the one relevant to the flow under test, so scan in
+    # reverse rather than returning the first match.
+    for record in reversed(caplog.records):
         if record.name == EMAIL_LOGGER:
             match = re.search(r"https?://\S+\?token=\S+", record.message)
             if match:
