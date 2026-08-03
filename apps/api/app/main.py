@@ -32,6 +32,8 @@ from app.modules.progress_tracking.router import router as progress_tracking_rou
 from app.modules.projects.exceptions import register_project_exception_handlers
 from app.modules.projects.router import dashboard_router as projects_dashboard_router
 from app.modules.projects.router import router as projects_router
+from app.modules.repo_ingestion.exceptions import register_repo_ingestion_exception_handlers
+from app.modules.repo_ingestion.router import router as repo_ingestion_router
 from app.modules.repository_integration.router import router as repository_integration_router
 from app.modules.stack_tiers.router import router as stack_tiers_router
 from app.modules.taxonomy.exceptions import register_taxonomy_exception_handlers
@@ -77,6 +79,7 @@ register_visual_exception_handlers(app)
 register_workspace_exception_handlers(app)
 register_progress_tracking_exception_handlers(app)
 register_cost_control_exception_handlers(app)
+register_repo_ingestion_exception_handlers(app)
 
 
 @app.get("/health")
@@ -106,6 +109,7 @@ for module_router in (
     projects_router,
     projects_dashboard_router,
     repository_integration_router,
+    repo_ingestion_router,
     curriculum_router,
     roadmap_router,
     taxonomy_router,

@@ -22,14 +22,15 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={() => setTheme(isDark ? "light" : "dark")}
+      title={mounted ? (isDark ? "Switch to light mode" : "Switch to dark mode") : "Toggle theme"}
       aria-label={mounted ? `Switch to ${isDark ? "light" : "dark"} theme` : "Toggle theme"}
-      className="flex h-10 w-10 items-center justify-center rounded-md text-ink-secondary transition-colors hover:bg-surface-muted hover:text-ink"
+      className="flex h-9 w-9 items-center justify-center rounded-lg border border-line bg-surface text-ink-secondary transition-all hover:bg-surface-muted hover:text-ink hover:border-line-strong/50"
     >
       {mounted ? (
         isDark ? (
-          <Sun className="h-4 w-4" aria-hidden="true" />
+          <Sun className="h-4 w-4 text-amber-400" aria-hidden="true" />
         ) : (
-          <Moon className="h-4 w-4" aria-hidden="true" />
+          <Moon className="h-4 w-4 text-ink" aria-hidden="true" />
         )
       ) : (
         <span className="h-4 w-4" aria-hidden="true" />

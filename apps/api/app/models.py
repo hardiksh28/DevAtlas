@@ -13,6 +13,7 @@ from app.modules.knowledge import models as knowledge_models  # noqa: F401
 from app.modules.mentoring import models as mentoring_models  # noqa: F401
 from app.modules.progress_tracking import models as progress_tracking_models  # noqa: F401
 from app.modules.projects import models as projects_models  # noqa: F401
+from app.modules.repo_ingestion import models as repo_ingestion_models  # noqa: F401
 from app.modules.taxonomy import models as taxonomy_models  # noqa: F401
 from app.modules.visuals import models as visuals_models  # noqa: F401
 from app.modules.workspace import models as workspace_models  # noqa: F401

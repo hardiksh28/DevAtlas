@@ -35,15 +35,14 @@ interface LogoProps {
 }
 
 /** Full lockup: mark + “DevAtlas” wordmark. */
-export function DevAtlasLogo({ size = 24, monochrome = false, className }: LogoProps) {
+export function DevAtlasLogo({ size = 26, monochrome = false, className }: LogoProps) {
   return (
-    <span className={`inline-flex items-center gap-2 text-ink ${className ?? ""}`}>
-      <DevAtlasMark monochrome={monochrome} style={{ width: size, height: size }} />
-      <span
-        className="font-semibold tracking-tight"
-        style={{ fontSize: Math.round(size * 0.78) }}
-      >
-        DevAtlas
+    <span className={`inline-flex items-center gap-2.5 text-ink ${className ?? ""}`}>
+      <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface border border-line shadow-sm transition-transform group-hover:scale-105">
+        <DevAtlasMark monochrome={monochrome} style={{ width: size - 4, height: size - 4 }} />
+      </span>
+      <span className="font-extrabold tracking-tight text-ink text-xl">
+        Dev<span className="text-accent">Atlas</span>
       </span>
     </span>
   );

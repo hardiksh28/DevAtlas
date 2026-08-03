@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import type { ReactNode } from "react";
 
@@ -7,25 +7,27 @@ import { QueryProvider } from "@/lib/query-client";
 
 import "./globals.css";
 
-const sans = Inter({
+const sans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 const mono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
   display: "swap",
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
   title: {
-    default: "DevAtlas — learn AI engineering by building",
+    default: "DevAtlas — Algorithms and AI Systems You Can See",
     template: "%s · DevAtlas",
   },
   description:
-    "DevAtlas guides you through building one real AI engineering project — with a mentor that explains, hints, and reviews instead of writing the code for you.",
+    "Every pattern, stepped through one frame at a time — pointers gliding, trees recursing, RAG fusing, and AI mentors explaining the why.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

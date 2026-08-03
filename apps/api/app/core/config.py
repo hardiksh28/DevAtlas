@@ -124,6 +124,15 @@ class Settings(BaseSettings):
     # (those aren't rate-limited by the API quota).
     github_api_token: str | None = None
 
+    # --- Repository Ingestion Engine ---
+    # Enumerating a tree is cheap (one API call) but still bounded —
+    # a repo with more entries than this is rejected before any file
+    # content is fetched. Deliberately larger than
+    # ingestion_max_github_files above, which caps *matched documentation
+    # files only*; this caps the raw tree (every file and folder).
+    repo_ingestion_max_tree_entries: int = 20_000
+    repo_ingestion_max_manifest_file_bytes: int = 2 * 1024 * 1024  # 2 MB
+
     # --- RAG Knowledge Engine (docs/architecture/rag-engine-v1.md) ---
     # Candidates pulled from each retriever *before* fusion — wider than
     # the final result count so Reciprocal Rank Fusion (Section 5 of
