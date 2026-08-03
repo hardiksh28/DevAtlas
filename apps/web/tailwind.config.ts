@@ -63,10 +63,26 @@ const config: Config = {
         mono: ["var(--font-mono)", ...defaultTheme.fontFamily.mono],
       },
       boxShadow: {
-        // Low-opacity, small-radius shadows only — panels rely on 1px
-        // borders for definition, shadows just lift overlays.
-        raised: "0 1px 2px 0 rgb(15 18 25 / 0.05)",
-        overlay: "0 10px 30px -8px rgb(15 18 25 / 0.18), 0 2px 8px -2px rgb(15 18 25 / 0.08)",
+        raised: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+        overlay: "0 10px 30px -8px rgb(0 0 0 / 0.5), 0 2px 8px -2px rgb(0 0 0 / 0.3)",
+        glass: "0 8px 32px 0 rgba(0, 0, 0, 0.4)",
+        "glow-blue": "0 0 40px -10px rgba(59, 130, 246, 0.3)",
+        "glow-purple": "0 0 40px -10px rgba(139, 92, 246, 0.3)",
+        "glow-cyan": "0 0 40px -10px rgba(6, 182, 212, 0.3)",
+      },
+      animation: {
+        "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        float: "float 6s ease-in-out infinite",
+        shimmer: "shimmer 2.5s linear infinite",
+      },
+      keyframes: {
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-6px)" },
+        },
+        shimmer: {
+          "100%": { transform: "translateX(100%)" },
+        },
       },
     },
   },

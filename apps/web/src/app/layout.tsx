@@ -23,11 +23,39 @@ const mono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "DevAtlas — Algorithms and AI Systems You Can See",
+    default: "DevAtlas — Stop Watching Tutorials. Start Building Production Software.",
     template: "%s · DevAtlas",
   },
   description:
-    "Every pattern, stepped through one frame at a time — pointers gliding, trees recursing, RAG fusing, and AI mentors explaining the why.",
+    "Upload documentation, GitHub repositories, or your own project idea. DevAtlas transforms them into a personalized engineering roadmap, teaches every concept, reviews your code like a senior engineer, and helps you ship production-ready software.",
+  keywords: [
+    "AI engineering",
+    "software engineering education",
+    "GitHub repo learning",
+    "Socratic AI mentor",
+    "code review",
+    "production software",
+    "interactive coding workspace",
+    "RAG systems",
+  ],
+  authors: [{ name: "DevAtlas" }],
+  creator: "DevAtlas Inc.",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://devatlas.com",
+    title: "DevAtlas — Stop Watching Tutorials. Start Building Production Software.",
+    description:
+      "Transform repositories, documentation, and project ideas into personalized engineering roadmaps with Socratic AI mentorship and PR-style code reviews.",
+    siteName: "DevAtlas",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DevAtlas — Stop Watching Tutorials. Start Building Production Software.",
+    description:
+      "Transform repositories, documentation, and project ideas into personalized engineering roadmaps with Socratic AI mentorship and PR-style code reviews.",
+    creator: "@devatlas",
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
