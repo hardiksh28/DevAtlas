@@ -57,29 +57,29 @@ const COMPARISON_DATA: ComparisonRow[] = [
 
 export function ComparisonTable() {
   return (
-    <section id="comparison" className="relative border-t border-white/[0.08] py-20 sm:py-28 lg:py-32">
+    <section id="comparison" className="relative border-t-2 border-line py-20 sm:py-28 lg:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-blue-400">
+          <p className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-accent-ink">
             HOW WE COMPARE
           </p>
-          <h2 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-[-0.03em] text-white">
+          <h2 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-black tracking-[-0.03em] text-ink">
             Built for engineering depth, not shortcuts.
           </h2>
-          <p className="mt-4 text-base sm:text-lg text-zinc-400">
+          <p className="mt-4 text-base sm:text-lg text-ink-secondary">
             See how DevAtlas fundamentally differs from passive video courses and generic chat generators.
           </p>
         </div>
 
         {/* Comparison Table Card */}
-        <div className="mt-16 overflow-x-auto rounded-3xl border border-white/[0.08] bg-zinc-900/40 p-1 backdrop-blur-2xl shadow-overlay">
+        <div className="mt-16 overflow-x-auto rounded-3xl border-2 border-ink bg-surface p-1 sticker-shadow">
           <table className="w-full text-left border-collapse min-w-[640px]">
             <thead>
-              <tr className="border-b border-white/[0.08] text-xs font-mono uppercase tracking-wider text-zinc-400">
-                <th className="p-6 font-semibold">Capability</th>
-                <th className="p-6 font-semibold text-center text-zinc-400">Video Tutorials</th>
-                <th className="p-6 font-semibold text-center text-zinc-400">ChatGPT / Copilot</th>
-                <th className="p-6 font-bold text-center text-blue-400 bg-blue-950/20 rounded-t-2xl border-x border-t border-blue-500/30">
+              <tr className="border-b-2 border-line text-xs font-mono uppercase tracking-wider text-ink-muted">
+                <th className="p-6 font-bold">Capability</th>
+                <th className="p-6 font-bold text-center text-ink-muted">Video Tutorials</th>
+                <th className="p-6 font-bold text-center text-ink-muted">ChatGPT / Copilot</th>
+                <th className="p-6 font-bold text-center text-ink bg-accent rounded-t-2xl border-x-2 border-t-2 border-ink">
                   <div className="flex items-center justify-center gap-1.5">
                     <Sparkles className="h-4 w-4" />
                     <span>DevAtlas</span>
@@ -87,41 +87,41 @@ export function ComparisonTable() {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.06] text-xs sm:text-sm">
+            <tbody className="divide-y-2 divide-line text-xs sm:text-sm">
               {COMPARISON_DATA.map((row, idx) => (
-                <tr key={idx} className="hover:bg-white/[0.02] transition-colors">
-                  <td className="p-6 font-medium text-zinc-200">{row.feature}</td>
+                <tr key={idx} className="hover:bg-surface-muted transition-colors">
+                  <td className="p-6 font-medium text-ink">{row.feature}</td>
 
                   {/* Video Tutorials */}
-                  <td className="p-6 text-center text-zinc-400 font-mono">
+                  <td className="p-6 text-center text-ink-muted font-mono">
                     {row.tutorials === true ? (
-                      <Check className="h-5 w-5 text-emerald-400 mx-auto" />
+                      <Check className="h-5 w-5 text-success mx-auto" />
                     ) : row.tutorials === false ? (
-                      <X className="h-5 w-5 text-rose-500 mx-auto opacity-70" />
+                      <X className="h-5 w-5 text-rose-400 mx-auto" />
                     ) : (
-                      <span className="text-zinc-500 text-xs">{row.tutorials}</span>
+                      <span className="text-ink-faint text-xs">{row.tutorials}</span>
                     )}
                   </td>
 
                   {/* ChatGPT / Copilot */}
-                  <td className="p-6 text-center text-zinc-400 font-mono">
+                  <td className="p-6 text-center text-ink-muted font-mono">
                     {row.chatgpt === true ? (
-                      <Check className="h-5 w-5 text-emerald-400 mx-auto" />
+                      <Check className="h-5 w-5 text-success mx-auto" />
                     ) : row.chatgpt === false ? (
-                      <X className="h-5 w-5 text-rose-500 mx-auto opacity-70" />
+                      <X className="h-5 w-5 text-rose-400 mx-auto" />
                     ) : (
-                      <span className="text-zinc-400 text-xs">{row.chatgpt}</span>
+                      <span className="text-ink-faint text-xs">{row.chatgpt}</span>
                     )}
                   </td>
 
                   {/* DevAtlas Highlight Column */}
-                  <td className="p-6 text-center font-mono font-semibold text-white bg-blue-950/10 border-x border-blue-500/20 last:rounded-b-2xl">
+                  <td className="p-6 text-center font-mono font-bold text-ink bg-accent-soft border-x-2 border-ink last:rounded-b-2xl">
                     {row.devatlas === true ? (
-                      <div className="flex items-center justify-center gap-1.5 text-blue-400">
+                      <div className="flex items-center justify-center gap-1.5 text-ink">
                         <Check className="h-5 w-5 stroke-[2.5]" />
                       </div>
                     ) : (
-                      <span className="text-blue-300">{row.devatlas}</span>
+                      <span className="text-ink">{row.devatlas}</span>
                     )}
                   </td>
                 </tr>

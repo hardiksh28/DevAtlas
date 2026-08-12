@@ -18,7 +18,7 @@ import { Footer } from "@/components/landing/Footer";
 
 export default function LandingPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-[#09090B] text-zinc-100 selection:bg-blue-500/30 selection:text-blue-200 font-sans antialiased">
+    <div className="landing-light flex min-h-screen flex-col bg-canvas text-ink selection:bg-accent selection:text-ink font-sans antialiased">
       {/* 1. Sticky Navigation */}
       <Navbar />
 

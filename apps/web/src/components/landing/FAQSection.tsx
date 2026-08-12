@@ -44,16 +44,16 @@ export function FAQSection() {
   };
 
   return (
-    <section id="faq" className="relative border-t border-white/[0.08] py-20 sm:py-28 lg:py-32">
+    <section id="faq" className="relative border-t-2 border-line py-20 sm:py-28 lg:py-32">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <p className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400">
+          <p className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-accent-ink">
             FREQUENTLY ASKED QUESTIONS
           </p>
-          <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-[-0.03em] text-white">
+          <h2 className="mt-3 text-3xl sm:text-4xl font-black tracking-[-0.03em] text-ink">
             Everything you need to know.
           </h2>
-          <p className="mt-4 text-base text-zinc-400">
+          <p className="mt-4 text-base text-ink-secondary">
             Clear answers on privacy, workflows, local AI support, and how DevAtlas works.
           </p>
         </div>
@@ -65,25 +65,26 @@ export function FAQSection() {
             return (
               <div
                 key={faq.question}
-                className="overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-900/40 backdrop-blur-xl transition-all duration-300 hover:border-white/[0.15]"
+                className={`overflow-hidden rounded-2xl border-2 bg-surface transition-colors duration-200 ${
+                  isOpen ? "border-ink sticker-shadow-sm" : "border-line"
+                }`}
               >
                 <button
                   type="button"
                   onClick={() => toggle(idx)}
-                  className="flex w-full items-center justify-between p-5 text-left transition-colors hover:bg-white/[0.02]"
+                  aria-expanded={isOpen}
+                  className="flex w-full items-center justify-between p-5 text-left transition-colors hover:bg-surface-muted"
                 >
-                  <span className="text-sm sm:text-base font-semibold text-white">
-                    {faq.question}
-                  </span>
+                  <span className="text-sm sm:text-base font-bold text-ink">{faq.question}</span>
                   <ChevronDown
-                    className={`h-4 w-4 text-zinc-400 transition-transform duration-300 ${
-                      isOpen ? "rotate-180 text-blue-400" : ""
+                    className={`h-4 w-4 shrink-0 text-ink-muted transition-transform duration-300 ${
+                      isOpen ? "rotate-180 text-accent-ink" : ""
                     }`}
                   />
                 </button>
 
                 {isOpen && (
-                  <div className="border-t border-white/[0.04] p-5 pt-3 text-xs sm:text-sm leading-relaxed text-zinc-400">
+                  <div className="border-t-2 border-line p-5 pt-3 text-xs sm:text-sm leading-relaxed text-ink-secondary">
                     {faq.answer}
                   </div>
                 )}

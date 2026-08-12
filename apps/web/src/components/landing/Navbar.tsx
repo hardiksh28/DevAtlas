@@ -1,6 +1,8 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowRight, Menu, X, Sparkles } from "lucide-react";
+import { ArrowRight, Menu, X } from "lucide-react";
 import { DevAtlasLogo } from "@/components/brand/Logo";
 
 function GithubIcon({ className }: { className?: string }) {
@@ -37,26 +39,24 @@ export function Navbar() {
   ];
 
   return (
-    <header
-      className={`sticky top-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "border-b border-white/[0.08] bg-[#09090B]/80 backdrop-blur-xl shadow-glass"
-          : "border-b border-transparent bg-transparent"
-      }`}
-    >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    <header className={`sticky top-3 z-50 px-3 sm:px-4 transition-all duration-300 ${isScrolled ? "" : ""}`}>
+      <div
+        className={`mx-auto flex h-16 max-w-6xl items-center justify-between rounded-full bg-ink pl-4 pr-2 sm:pl-6 sm:pr-3 shadow-lg transition-shadow ${
+          isScrolled ? "shadow-2xl" : ""
+        }`}
+      >
         {/* Brand Logo */}
-        <Link href="/" aria-label="DevAtlas home" className="flex items-center gap-2 group">
-          <DevAtlasLogo size={26} />
+        <Link href="/" aria-label="DevAtlas home" className="flex items-center gap-2 group shrink-0">
+          <DevAtlasLogo size={24} dark />
         </Link>
 
         {/* Desktop Navigation Links */}
-        <nav className="hidden md:flex items-center gap-1 lg:gap-2">
+        <nav className="hidden md:flex items-center gap-1 lg:gap-1.5">
           {navLinks.map((link) => (
             <a
               key={link.label}
               href={link.href}
-              className="rounded-lg px-3 py-1.5 text-xs lg:text-sm font-medium text-zinc-400 transition-colors hover:bg-white/[0.04] hover:text-white"
+              className="rounded-full px-3 py-2 text-xs lg:text-sm font-semibold text-white/70 transition-colors hover:bg-white/10 hover:text-white"
             >
               {link.label}
             </a>
@@ -64,27 +64,27 @@ export function Navbar() {
         </nav>
 
         {/* Right CTA Actions */}
-        <div className="hidden sm:flex items-center gap-3">
+        <div className="hidden sm:flex items-center gap-2">
           <a
             href="https://github.com/hardiksh28/DevAtlas"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 rounded-lg border border-white/[0.08] bg-zinc-900/60 px-3 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:border-white/[0.2] hover:bg-zinc-800 hover:text-white"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+            aria-label="GitHub repository"
           >
             <GithubIcon className="h-4 w-4" />
-            <span className="hidden lg:inline">GitHub</span>
           </a>
 
           <Link
             href="/login"
-            className="rounded-lg px-3 py-1.5 text-xs lg:text-sm font-medium text-zinc-400 transition-colors hover:text-white"
+            className="rounded-full bg-white px-5 py-2.5 text-xs lg:text-sm font-bold text-ink transition-transform active:scale-[0.97] hover:bg-white/90"
           >
-            Sign in
+            Sign In
           </Link>
 
           <Link
             href="/register"
-            className="relative inline-flex items-center justify-center gap-1.5 overflow-hidden rounded-lg bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-4 py-1.5 text-xs lg:text-sm font-semibold text-white shadow-glow-blue transition-all duration-300 hover:opacity-95 hover:shadow-[0_0_25px_rgba(59,130,246,0.5)] active:scale-[0.98]"
+            className="inline-flex items-center justify-center gap-1.5 rounded-full bg-accent px-5 py-2.5 text-xs lg:text-sm font-bold text-ink transition-transform hover:bg-accent-hover active:scale-[0.97]"
           >
             <span>Start Building</span>
             <ArrowRight className="h-3.5 w-3.5" />
@@ -93,16 +93,13 @@ export function Navbar() {
 
         {/* Mobile Menu Toggle Button */}
         <div className="flex sm:hidden items-center gap-2">
-          <Link
-            href="/register"
-            className="rounded-lg bg-blue-600 px-3 py-1 text-xs font-semibold text-white"
-          >
+          <Link href="/register" className="rounded-full bg-accent px-3 py-1.5 text-xs font-bold text-ink">
             Start
           </Link>
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="rounded-lg border border-white/[0.08] p-2 text-zinc-400 hover:text-white"
+            className="rounded-full p-2 text-white/80 hover:bg-white/10 hover:text-white"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -112,37 +109,37 @@ export function Navbar() {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="border-b border-white/[0.08] bg-[#09090B]/95 px-4 py-6 backdrop-blur-2xl sm:hidden">
-          <nav className="flex flex-col gap-3">
+        <div className="mx-auto mt-2 max-w-6xl rounded-3xl border-2 border-ink bg-surface px-4 py-6 shadow-lg sm:hidden">
+          <nav className="flex flex-col gap-1">
             {navLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className="rounded-lg px-3 py-2 text-sm font-medium text-zinc-300 hover:bg-white/[0.05] hover:text-white"
+                className="rounded-xl px-3 py-2.5 text-sm font-semibold text-ink-secondary hover:bg-surface-muted hover:text-ink"
               >
                 {link.label}
               </a>
             ))}
-            <div className="mt-4 flex flex-col gap-2 pt-4 border-t border-white/[0.08]">
+            <div className="mt-4 flex flex-col gap-2 pt-4 border-t-2 border-line">
               <a
                 href="https://github.com/hardiksh28/DevAtlas"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 rounded-lg border border-white/[0.08] bg-zinc-900 py-2 text-sm text-zinc-300"
+                className="flex items-center justify-center gap-2 rounded-full border-2 border-ink py-2.5 text-sm font-semibold text-ink"
               >
                 <GithubIcon className="h-4 w-4" />
                 <span>GitHub Repository</span>
               </a>
               <Link
                 href="/login"
-                className="flex items-center justify-center rounded-lg border border-white/[0.08] py-2 text-sm text-zinc-300"
+                className="flex items-center justify-center rounded-full border-2 border-ink py-2.5 text-sm font-semibold text-ink"
               >
                 Sign in
               </Link>
               <Link
                 href="/register"
-                className="flex items-center justify-center gap-2 rounded-lg bg-blue-600 py-2 text-sm font-semibold text-white shadow-glow-blue"
+                className="flex items-center justify-center gap-2 rounded-full bg-accent py-2.5 text-sm font-bold text-ink"
               >
                 <span>Start Building Free</span>
                 <ArrowRight className="h-4 w-4" />

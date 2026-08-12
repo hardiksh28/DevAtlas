@@ -86,28 +86,20 @@ export function InteractiveProductDemo() {
   };
 
   return (
-    <section className="relative overflow-hidden border-t border-white/[0.08] bg-[#09090B] py-16 sm:py-24 lg:py-28">
-      {/* Ambient Radial Spotlight */}
-      <div className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center">
-        <div className="h-[550px] w-[900px] max-w-full rounded-full bg-gradient-to-tr from-blue-600/15 via-purple-600/15 to-cyan-500/10 blur-[140px]" />
-        <div className="absolute inset-0 bg-matrix-grid opacity-40" />
-      </div>
-
+    <section className="relative overflow-hidden border-t-2 border-line py-16 sm:py-24 lg:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="mx-auto max-w-3xl text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-blue-500/10 px-3.5 py-1 text-xs font-semibold text-blue-400 backdrop-blur-md">
-            <Sparkles className="h-3.5 w-3.5" />
+          <div className="inline-flex items-center gap-2 rounded-full border-2 border-ink bg-surface px-3.5 py-1 text-xs font-bold text-ink">
+            <Sparkles className="h-3.5 w-3.5 text-accent-ink" />
             <span>INTERACTIVE PRODUCT WALKTHROUGH</span>
           </div>
 
-          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-[-0.03em] text-white">
+          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black tracking-[-0.03em] text-ink">
             See DevAtlas in action. <br />
-            <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-cyan-300 bg-clip-text text-transparent">
-              From repository to production in seconds.
-            </span>
+            <span className="highlight-mark">From repository to production in seconds.</span>
           </h2>
-          <p className="mt-4 text-base sm:text-lg text-zinc-400">
+          <p className="mt-4 text-base sm:text-lg text-ink-secondary">
             Watch how DevAtlas ingests any GitHub codebase, extracts an architectural roadmap, mentors your implementation, and ships live software.
           </p>
         </div>
@@ -126,38 +118,29 @@ export function InteractiveProductDemo() {
                   key={step.id}
                   type="button"
                   onClick={() => goToStep(idx)}
-                  className={`group relative flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2 text-xs font-mono transition-all duration-300 ${
+                  className={`group relative flex shrink-0 items-center gap-2 rounded-xl border-2 px-3 py-2 text-xs font-mono transition-all duration-300 ${
                     isActive
-                      ? "border-blue-500/60 bg-blue-950/40 text-white shadow-glow-blue"
+                      ? "border-ink bg-accent-soft text-ink"
                       : isPast
-                      ? "border-white/[0.08] bg-zinc-900/60 text-zinc-300 hover:border-white/[0.2]"
-                      : "border-white/[0.04] bg-zinc-900/30 text-zinc-500 hover:text-zinc-300"
+                      ? "border-line bg-surface text-ink-secondary hover:border-ink"
+                      : "border-line bg-surface-muted text-ink-faint hover:text-ink-muted"
                   }`}
                 >
                   <Icon
                     className={`h-3.5 w-3.5 transition-transform group-hover:scale-110 ${
-                      isActive ? "text-blue-400" : isPast ? "text-emerald-400" : "text-zinc-500"
+                      isActive ? "text-accent-ink" : isPast ? "text-success-ink" : "text-ink-faint"
                     }`}
                   />
                   <span>{step.shortTitle}</span>
-
-                  {/* Active Step Progress Pill indicator */}
-                  {isActive && (
-                    <motion.div
-                      layoutId="activePill"
-                      className="absolute inset-0 -z-10 rounded-xl bg-blue-600/10 border border-blue-500/40"
-                      transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                    />
-                  )}
                 </button>
               );
             })}
           </div>
 
           {/* Timeline Linear Progress Line */}
-          <div className="mt-3 relative h-1 w-full overflow-hidden rounded-full bg-zinc-800/80">
+          <div className="mt-3 relative h-1.5 w-full overflow-hidden rounded-full border-2 border-ink bg-surface-muted">
             <motion.div
-              className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-400"
+              className="h-full bg-accent"
               initial={{ width: "0%" }}
               animate={{ width: `${((currentStep + 1) / STEPS.length) * 100}%` }}
               transition={{ duration: 0.3, ease: "easeOut" }}
@@ -165,8 +148,8 @@ export function InteractiveProductDemo() {
           </div>
         </div>
 
-        {/* Main Interactive Demo Sandbox Stage */}
-        <div className="mt-8 relative rounded-3xl border border-white/[0.1] bg-[#101014]/95 p-4 sm:p-7 backdrop-blur-2xl shadow-overlay">
+        {/* Main Interactive Demo Sandbox Stage — kept in a dark product-UI theme (authentic mockup) inside a sticker-bordered frame */}
+        <div className="mt-8 relative rounded-3xl border-2 border-ink bg-[#101014] p-4 sm:p-7 sticker-shadow">
           {/* Top Stage Control Header */}
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
             <div className="flex items-center gap-2">
@@ -209,8 +192,8 @@ export function InteractiveProductDemo() {
                 <RotateCcw className="h-3.5 w-3.5" />
               </button>
 
-              <div className="hidden sm:flex items-center gap-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1 font-mono text-[11px] text-blue-300">
-                <Activity className="h-3 w-3 animate-pulse text-blue-400" />
+              <div className="hidden sm:flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 font-mono text-[11px] text-accent">
+                <Activity className="h-3 w-3 animate-pulse text-accent" />
                 <span>{STEPS[currentStep]?.label}</span>
               </div>
             </div>
@@ -229,7 +212,7 @@ export function InteractiveProductDemo() {
                   transition={{ duration: 0.35 }}
                   className="w-full max-w-xl text-center"
                 >
-                  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-500/20 text-blue-400 border border-blue-500/30 shadow-glow-blue">
+                  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-500/20 text-blue-400 border border-blue-500/30">
                     <GitBranch className="h-7 w-7" />
                   </div>
                   <h3 className="mt-4 text-xl sm:text-2xl font-bold text-white">
@@ -239,7 +222,7 @@ export function InteractiveProductDemo() {
                     Paste any public or private GitHub repository URL
                   </p>
 
-                  <div className="mt-6 flex items-center gap-2 rounded-xl border border-blue-500/40 bg-zinc-900/90 p-2 shadow-glow-blue">
+                  <div className="mt-6 flex items-center gap-2 rounded-xl border border-blue-500/40 bg-zinc-900/90 p-2">
                     <GitBranch className="h-5 w-5 text-blue-400 ml-2" />
                     <span className="flex-1 text-left font-mono text-xs sm:text-sm text-white overflow-hidden text-ellipsis whitespace-nowrap">
                       https://github.com/langchain-ai/rag-pipeline
@@ -316,7 +299,7 @@ export function InteractiveProductDemo() {
                   transition={{ duration: 0.35 }}
                   className="w-full max-w-xl text-center"
                 >
-                  <div className="relative mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-purple-500/20 text-purple-400 border border-purple-500/40 shadow-glow-purple">
+                  <div className="relative mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-purple-500/20 text-purple-400 border border-purple-500/40">
                     <Search className="h-8 w-8 animate-pulse" />
                   </div>
                   <h3 className="mt-4 text-xl sm:text-2xl font-bold text-white">
@@ -361,15 +344,15 @@ export function InteractiveProductDemo() {
                   </h3>
 
                   <div className="grid grid-cols-3 gap-4 font-mono text-xs">
-                    <div className="rounded-2xl border border-blue-500/40 bg-blue-950/20 p-4 shadow-glow-blue">
+                    <div className="rounded-2xl border border-blue-500/40 bg-blue-950/20 p-4">
                       <div className="font-bold text-blue-400">Input Query</div>
                       <div className="text-[11px] text-zinc-400 mt-1">User Prompt + Embeddings</div>
                     </div>
-                    <div className="rounded-2xl border border-purple-500/40 bg-purple-950/20 p-4 shadow-glow-purple">
+                    <div className="rounded-2xl border border-purple-500/40 bg-purple-950/20 p-4">
                       <div className="font-bold text-purple-400">RRF Engine</div>
                       <div className="text-[11px] text-zinc-400 mt-1">Dense + BM25 Fusion</div>
                     </div>
-                    <div className="rounded-2xl border border-cyan-500/40 bg-cyan-950/20 p-4 shadow-glow-cyan">
+                    <div className="rounded-2xl border border-cyan-500/40 bg-cyan-950/20 p-4">
                       <div className="font-bold text-cyan-400">Eval Gate</div>
                       <div className="text-[11px] text-zinc-400 mt-1">Groundedness &gt; 0.95</div>
                     </div>
@@ -435,7 +418,7 @@ export function InteractiveProductDemo() {
                     <span className="text-[10px] text-zinc-500">Completed</span>
                   </div>
 
-                  <div className="rounded-xl border border-blue-500/50 bg-blue-950/30 p-3 flex items-center justify-between text-white shadow-glow-blue">
+                  <div className="rounded-xl border border-blue-500/50 bg-blue-950/30 p-3 flex items-center justify-between text-white">
                     <span className="flex items-center gap-2 font-bold">
                       <span className="h-2 w-2 rounded-full bg-blue-400 animate-ping" />
                       02. Hybrid Dense + BM25 Reciprocal Rank Fusion
@@ -525,7 +508,7 @@ export function InteractiveProductDemo() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -15 }}
                   transition={{ duration: 0.35 }}
-                  className="w-full max-w-xl rounded-2xl border border-purple-500/40 bg-[#14121E] p-5 text-left shadow-glow-purple"
+                  className="w-full max-w-xl rounded-2xl border border-purple-500/40 bg-[#14121E] p-5 text-left"
                 >
                   <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
                     <div className="flex items-center gap-2 text-purple-300 font-mono text-xs font-bold">
@@ -557,7 +540,7 @@ export function InteractiveProductDemo() {
                   transition={{ duration: 0.35 }}
                   className="w-full max-w-lg text-center"
                 >
-                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-glow-blue">
+                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
                     <CheckCircle2 className="h-9 w-9" />
                   </div>
                   <h3 className="mt-4 text-xl sm:text-2xl font-bold text-white">
@@ -594,7 +577,7 @@ export function InteractiveProductDemo() {
                   transition={{ duration: 0.35 }}
                   className="w-full max-w-xl text-center"
                 >
-                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-600 to-purple-600 text-white shadow-glow-blue">
+                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-600 to-purple-600 text-white">
                     <Rocket className="h-8 w-8" />
                   </div>
                   <h3 className="mt-4 text-xl sm:text-2xl font-bold text-white">
@@ -621,7 +604,7 @@ export function InteractiveProductDemo() {
           {/* Bottom Footer Note */}
           <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-zinc-500 pt-4 border-t border-white/[0.06] font-mono">
             <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
+              <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
               <span>Full lifecycle: Ingestion → Roadmap → Socratic Review → Production Deploy</span>
             </div>
             <span className="text-zinc-400">100% browser-based with isolated cloud container</span>

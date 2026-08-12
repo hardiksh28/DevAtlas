@@ -27,15 +27,23 @@ function TwitterIcon({ className }: { className?: string }) {
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/[0.08] bg-[#070709] py-16 text-xs text-zinc-400">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <footer className="relative overflow-hidden bg-ink py-16 text-xs text-white/60 mt-4 mx-3 mb-3 rounded-[2rem] sm:mx-4 sm:mb-4">
+      {/* Soft yellow ambient glow, bottom-center */}
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 -z-0 h-72"
+        style={{
+          background: "radial-gradient(ellipse 480px 220px at 50% 100%, rgba(250,204,21,0.35), transparent 70%)",
+        }}
+      />
+
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
           {/* Brand & Mission Column */}
           <div>
             <Link href="/" aria-label="DevAtlas home">
-              <DevAtlasLogo size={24} />
+              <DevAtlasLogo size={24} dark />
             </Link>
-            <p className="mt-4 max-w-sm text-sm leading-relaxed text-zinc-400">
+            <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/60">
               The AI engineering workspace. Upload repositories, follow personalized milestone
               roadmaps, receive Socratic code reviews, and ship production software.
             </p>
@@ -44,7 +52,7 @@ export function Footer() {
                 href="https://github.com/hardiksh28/DevAtlas"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.08] bg-zinc-900 text-zinc-400 transition-colors hover:border-white/[0.2] hover:text-white"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white/60 transition-colors hover:border-white/30 hover:text-white"
                 aria-label="GitHub"
               >
                 <GithubIcon className="h-4 w-4" />
@@ -53,7 +61,7 @@ export function Footer() {
                 href="https://twitter.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.08] bg-zinc-900 text-zinc-400 transition-colors hover:border-white/[0.2] hover:text-white"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white/60 transition-colors hover:border-white/30 hover:text-white"
                 aria-label="Twitter / X"
               >
                 <TwitterIcon className="h-3.5 w-3.5" />
@@ -62,7 +70,7 @@ export function Footer() {
                 href="https://discord.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.08] bg-zinc-900 text-zinc-400 transition-colors hover:border-white/[0.2] hover:text-white"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white/60 transition-colors hover:border-white/30 hover:text-white"
                 aria-label="Discord"
               >
                 <MessageSquare className="h-4 w-4" />
@@ -72,7 +80,7 @@ export function Footer() {
 
           {/* Product Links */}
           <div>
-            <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-white">
+            <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-accent">
               Product
             </h4>
             <ul className="mt-4 space-y-2.5">
@@ -106,7 +114,7 @@ export function Footer() {
 
           {/* Resources Links */}
           <div>
-            <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-white">
+            <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-accent">
               Resources
             </h4>
             <ul className="mt-4 space-y-2.5">
@@ -131,14 +139,14 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <span className="text-zinc-600">API Reference (v1.4)</span>
+                <span className="text-white/30">API Reference (v1.4)</span>
               </li>
             </ul>
           </div>
 
           {/* Legal Links */}
           <div>
-            <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-white">
+            <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-accent">
               Legal & Trust
             </h4>
             <ul className="mt-4 space-y-2.5">
@@ -162,11 +170,11 @@ export function Footer() {
         </div>
 
         {/* Bottom Sub-Footer Bar */}
-        <div className="mt-12 flex flex-col gap-4 border-t border-white/[0.08] pt-8 sm:flex-row sm:items-center sm:justify-between text-xs text-zinc-500">
+        <div className="mt-12 flex flex-col gap-4 border-t border-white/10 pt-8 sm:flex-row sm:items-center sm:justify-between text-xs text-white/40">
           <p>© {new Date().getFullYear()} DevAtlas Inc. All rights reserved.</p>
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="font-mono text-[11px] text-zinc-400">All systems operational · v2.0.0</span>
+            <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
+            <span className="font-mono text-[11px] text-white/50">All systems operational · v2.0.0</span>
           </div>
         </div>
       </div>

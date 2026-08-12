@@ -11,7 +11,6 @@ interface MetricItem {
   decimals?: number;
   label: string;
   sublabel: string;
-  glowColor: string;
 }
 
 const METRICS: MetricItem[] = [
@@ -21,7 +20,6 @@ const METRICS: MetricItem[] = [
     suffix: "+",
     label: "Repositories Parsed",
     sublabel: "Real-world codebases indexed",
-    glowColor: "from-blue-500/20 to-transparent",
   },
   {
     icon: Map,
@@ -29,7 +27,6 @@ const METRICS: MetricItem[] = [
     suffix: "+",
     label: "Roadmaps Generated",
     sublabel: "Personalized milestone paths",
-    glowColor: "from-purple-500/20 to-transparent",
   },
   {
     icon: BookOpen,
@@ -37,7 +34,6 @@ const METRICS: MetricItem[] = [
     suffix: "+",
     label: "Lessons Created",
     sublabel: "Grounded on source code",
-    glowColor: "from-cyan-500/20 to-transparent",
   },
   {
     icon: Rocket,
@@ -45,7 +41,6 @@ const METRICS: MetricItem[] = [
     suffix: "+",
     label: "Projects Built",
     sublabel: "Shipped to production cloud",
-    glowColor: "from-emerald-500/20 to-transparent",
   },
 ];
 
@@ -111,13 +106,10 @@ export function MetricsSection() {
   const isInView = useInView(containerRef, { once: true, margin: "-50px" });
 
   return (
-    <section
-      ref={containerRef}
-      className="relative border-y border-white/[0.08] bg-[#09090B]/60 py-14 backdrop-blur-md"
-    >
+    <section ref={containerRef} className="relative border-y-2 border-line bg-surface-muted py-14">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <p className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
+          <p className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-ink-muted">
             ENGINEERING RESULTS AT SCALE
           </p>
         </div>
@@ -133,18 +125,13 @@ export function MetricsSection() {
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: idx * 0.1, ease: "easeOut" }}
                 whileHover={{ y: -4 }}
-                className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-zinc-900/50 p-6 text-center backdrop-blur-xl transition-all duration-300 hover:border-white/[0.18] hover:bg-zinc-900/80 hover:shadow-glass"
+                className="group relative overflow-hidden rounded-2xl border-2 border-ink bg-surface p-6 text-center transition-shadow duration-200 sticker-shadow-sm sticker-shadow-hover"
               >
-                {/* Background ambient radial highlight */}
-                <div
-                  className={`pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 h-24 w-24 rounded-full bg-gradient-to-b ${metric.glowColor} blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
-                />
-
-                <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.08] bg-zinc-800/80 text-zinc-300 shadow-sm transition-all duration-300 group-hover:border-blue-500/40 group-hover:text-blue-400 group-hover:rotate-6">
+                <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl border-2 border-ink bg-accent-soft text-ink transition-transform duration-300 group-hover:rotate-6">
                   <Icon className="h-5 w-5" />
                 </div>
 
-                <div className="mt-4 font-mono text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+                <div className="mt-4 font-mono text-2xl sm:text-3xl font-black tracking-tight text-ink">
                   <AnimatedCounter
                     target={metric.targetNum}
                     suffix={metric.suffix}
@@ -153,13 +140,9 @@ export function MetricsSection() {
                   />
                 </div>
 
-                <div className="mt-1 text-sm font-semibold text-zinc-200">
-                  {metric.label}
-                </div>
+                <div className="mt-1 text-sm font-bold text-ink">{metric.label}</div>
 
-                <div className="mt-0.5 text-xs text-zinc-500">
-                  {metric.sublabel}
-                </div>
+                <div className="mt-0.5 text-xs text-ink-muted">{metric.sublabel}</div>
               </motion.div>
             );
           })}

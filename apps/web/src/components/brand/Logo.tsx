@@ -32,17 +32,23 @@ interface LogoProps {
   size?: number;
   monochrome?: boolean;
   className?: string;
+  /** Render for placement on a black/dark surface (navbar, footer) — ink text becomes white. */
+  dark?: boolean;
 }
 
 /** Full lockup: mark + “DevAtlas” wordmark. */
-export function DevAtlasLogo({ size = 26, monochrome = false, className }: LogoProps) {
+export function DevAtlasLogo({ size = 26, monochrome = false, className, dark = false }: LogoProps) {
   return (
-    <span className={`inline-flex items-center gap-2.5 text-ink ${className ?? ""}`}>
-      <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface border border-line shadow-sm transition-transform group-hover:scale-105">
+    <span className={`inline-flex items-center gap-2.5 ${dark ? "text-white" : "text-ink"} ${className ?? ""}`}>
+      <span
+        className={`flex h-8 w-8 items-center justify-center rounded-lg border shadow-sm transition-transform group-hover:scale-105 ${
+          dark ? "bg-white/10 border-white/20" : "bg-surface border-line"
+        }`}
+      >
         <DevAtlasMark monochrome={monochrome} style={{ width: size - 4, height: size - 4 }} />
       </span>
-      <span className="font-extrabold tracking-tight text-ink text-xl">
-        Dev<span className="text-accent">Atlas</span>
+      <span className={`font-extrabold tracking-tight text-xl ${dark ? "text-white" : "text-ink"}`}>
+        Dev<span className={dark ? "text-accent" : "text-accent-ink"}>Atlas</span>
       </span>
     </span>
   );

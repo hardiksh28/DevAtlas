@@ -68,11 +68,8 @@ export function WorkspacePreview() {
     <section
       id="workspace"
       ref={containerRef}
-      className="relative border-t border-white/[0.08] py-20 sm:py-28 lg:py-32"
+      className="relative border-t-2 border-line py-20 sm:py-28 lg:py-32"
     >
-      {/* Subtle Background Glow */}
-      <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,rgba(59,130,246,0.12),transparent_70%)]" />
-
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 15 }}
@@ -80,23 +77,23 @@ export function WorkspacePreview() {
           transition={{ duration: 0.5 }}
           className="mx-auto max-w-3xl text-center"
         >
-          <p className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-blue-400">
+          <p className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-accent-ink">
             INTEGRATED CLOUD RUNTIME
           </p>
-          <h2 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-[-0.03em] text-white">
+          <h2 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-black tracking-[-0.03em] text-ink">
             A realistic IDE in your browser.
           </h2>
-          <p className="mt-4 text-base sm:text-lg text-zinc-400">
+          <p className="mt-4 text-base sm:text-lg text-ink-secondary">
             Everything you need to write, test, evaluate, and ship AI systems without dealing with local environment breakage.
           </p>
         </motion.div>
 
-        {/* Realistic IDE Mockup */}
+        {/* Realistic IDE Mockup — kept in its native dark editor theme (authentic to a real IDE) inside a sticker-bordered frame */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.15 }}
-          className="mt-16 overflow-hidden rounded-3xl border border-white/[0.1] bg-[#0E0E11] shadow-overlay backdrop-blur-2xl"
+          className="mt-16 overflow-hidden rounded-3xl border-2 border-ink bg-[#0E0E11] sticker-shadow"
         >
           {/* Top IDE Navigation Header */}
           <div className="flex items-center justify-between border-b border-white/[0.08] bg-[#141418] px-4 py-3">
@@ -107,7 +104,7 @@ export function WorkspacePreview() {
               <div className="ml-3 hidden sm:flex items-center gap-2 rounded-md bg-black/40 px-3 py-1 text-xs font-mono text-zinc-400">
                 <span>workspace: hybrid-rag-evals</span>
                 <span className="text-zinc-600">/</span>
-                <span className="text-blue-400 font-semibold">Python 3.12</span>
+                <span className="text-accent font-semibold">Python 3.12</span>
               </div>
             </div>
 
@@ -120,7 +117,7 @@ export function WorkspacePreview() {
                 type="button"
                 onClick={runEvals}
                 disabled={evalRunning}
-                className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-blue-500 transition-colors shadow-glow-blue active:scale-95 disabled:opacity-50"
+                className="flex items-center gap-1.5 rounded-lg bg-accent px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-accent-hover transition-colors  active:scale-95 disabled:opacity-50"
               >
                 <Play className={`h-3 w-3 fill-white ${evalRunning ? "animate-spin" : ""}`} />
                 <span>{evalRunning ? "Running..." : "Run Evals"}</span>
@@ -144,7 +141,7 @@ export function WorkspacePreview() {
                   className="flex w-full items-center gap-1.5 text-zinc-300 font-semibold hover:text-white"
                 >
                   {folderOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
-                  <Folder className="h-3.5 w-3.5 text-blue-400" />
+                  <Folder className="h-3.5 w-3.5 text-accent" />
                   <span>src/pipeline</span>
                 </button>
 
@@ -157,7 +154,7 @@ export function WorkspacePreview() {
                         onClick={() => setActiveTab(file.name)}
                         className={`flex w-full items-center gap-1.5 rounded px-2 py-1 transition-colors ${
                           activeTab === file.name
-                            ? "bg-blue-500/20 text-blue-400 font-semibold"
+                            ? "bg-accent/20 text-accent font-semibold"
                             : "text-zinc-400 hover:text-zinc-200"
                         }`}
                       >
@@ -177,7 +174,7 @@ export function WorkspacePreview() {
                   Milestone 2 of 5
                 </div>
                 <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-zinc-800">
-                  <div className="h-full w-[40%] rounded-full bg-blue-500" />
+                  <div className="h-full w-[40%] rounded-full bg-accent" />
                 </div>
               </div>
             </div>
@@ -193,11 +190,11 @@ export function WorkspacePreview() {
                     onClick={() => setActiveTab(file.name)}
                     className={`flex items-center gap-1.5 border-b-2 px-3 py-2 transition-colors ${
                       activeTab === file.name
-                        ? "border-blue-500 bg-[#0E0E11] text-white font-semibold"
+                        ? "border-accent bg-[#0E0E11] text-white font-semibold"
                         : "border-transparent text-zinc-500 hover:text-zinc-300"
                     }`}
                   >
-                    <FileCode2 className="h-3.5 w-3.5 text-blue-400" />
+                    <FileCode2 className="h-3.5 w-3.5 text-accent" />
                     <span>{file.name}</span>
                   </button>
                 ))}
@@ -215,7 +212,7 @@ export function WorkspacePreview() {
                         ) : line.includes("async def") ? (
                           <>
                             <span className="text-purple-400">async def</span>{" "}
-                            <span className="text-blue-400">retrieve_hybrid_context</span>(query: str, top_k: int = 5):
+                            <span className="text-accent">retrieve_hybrid_context</span>(query: str, top_k: int = 5):
                           </>
                         ) : line.includes("asyncio.gather") ? (
                           <>
@@ -227,7 +224,7 @@ export function WorkspacePreview() {
                           <>
                             <span className="text-purple-400">    return</span>{" "}
                             <span>reranked[:top_k]</span>
-                            <span className="animate-pulse text-blue-400 font-bold ml-0.5">|</span>
+                            <span className="animate-pulse text-accent font-bold ml-0.5">|</span>
                           </>
                         ) : (
                           <span>{line}</span>
@@ -287,12 +284,12 @@ export function WorkspacePreview() {
                   </p>
                 </div>
 
-                <div className="mt-4 rounded-xl border border-blue-500/30 bg-blue-950/20 p-3">
-                  <div className="font-mono text-[10px] font-bold text-blue-400 uppercase">
+                <div className="mt-4 rounded-xl border border-accent/30 bg-accent-soft/40 p-3">
+                  <div className="font-mono text-[10px] font-bold text-accent uppercase">
                     Next Milestone Action
                   </div>
                   <p className="mt-1 text-xs text-zinc-300">
-                    Configure the RAG Triad test suite in <code className="text-blue-300 font-mono">evals/</code>.
+                    Configure the RAG Triad test suite in <code className="text-accent font-mono">evals/</code>.
                   </p>
                 </div>
               </div>
@@ -301,7 +298,7 @@ export function WorkspacePreview() {
               <div className="mt-6 rounded-xl border border-white/[0.06] bg-black/40 p-3 font-mono text-[11px]">
                 <div className="flex items-center justify-between text-zinc-400 pb-2 border-b border-white/[0.04]">
                   <div className="flex items-center gap-1.5 text-zinc-300">
-                    <Globe className="h-3.5 w-3.5 text-blue-400" />
+                    <Globe className="h-3.5 w-3.5 text-accent" />
                     <span>Preview Port :8000</span>
                   </div>
                   <span className="text-emerald-400">200 OK</span>
