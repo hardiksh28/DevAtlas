@@ -4,14 +4,20 @@ import { Send } from "lucide-react";
 import { useState } from "react";
 import { Button } from "ui";
 
+import { PixelPet } from "@/components/companion/PixelPet";
+import { useCurrentUser } from "@/hooks/useAuth";
 import { useMentorMessages, useSendMentorMessage } from "@/hooks/useMentor";
+import { getCompanionDisplayName } from "@/lib/companion";
 import { useSessionStore } from "@/store/useSessionStore";
 
 export function ChatPanel({ projectId }: { projectId: string }) {
+  const { data: user } = useCurrentUser();
   const { data, isLoading } = useMentorMessages(projectId);
   const sendMessage = useSendMentorMessage(projectId);
   const currentMilestoneId = useSessionStore((s) => s.currentMilestoneId);
   const [draft, setDraft] = useState("");
+
+  const companionName = getCompanionDisplayName(user?.companion_name);
 
   function handleSend() {
     const content = draft.trim();
@@ -22,10 +28,17 @@ export function ChatPanel({ projectId }: { projectId: string }) {
 
   return (
     <div className="flex h-full flex-col">
+      <div className="flex items-center gap-2 border-b border-line px-3 py-2">
+        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent-soft">
+          <PixelPet species={user?.companion_avatar} size={2} idle={false} />
+        </span>
+        <span className="text-sm font-semibold text-ink">{companionName}</span>
+      </div>
+
       <div className="flex-1 space-y-3 overflow-y-auto p-3">
         {isLoading && <p className="text-sm text-ink-muted">Loading conversation…</p>}
         {!isLoading && (data?.items.length ?? 0) === 0 && (
-          <p className="text-sm text-ink-muted">Ask your mentor anything about this project.</p>
+          <p className="text-sm text-ink-muted">Ask {companionName} anything about this project.</p>
         )}
         {data?.items.map((message) => (
           <div
@@ -56,7 +69,7 @@ export function ChatPanel({ projectId }: { projectId: string }) {
               handleSend();
             }
           }}
-          placeholder="Ask your mentor…"
+          placeholder={`Ask ${companionName}…`}
           rows={2}
           className="min-w-0 flex-1 resize-none rounded-md border border-line bg-canvas px-2 py-1.5 text-sm text-ink placeholder:text-ink-faint focus:border-accent focus:outline-none"
         />

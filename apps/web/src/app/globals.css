@@ -242,4 +242,29 @@
       transform: none;
     }
   }
+
+  /* AI companion pixel sprite — gentle idle bob, and a one-shot bounce
+   * when a notification fires (PixelPet.tsx). */
+  .pixel-pet-sprite {
+    image-rendering: pixelated;
+  }
+  .pixel-pet-idle {
+    animation: pixel-pet-bob 2.4s ease-in-out infinite;
+  }
+  .pixel-pet-bounce {
+    animation: pixel-pet-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  @keyframes pixel-pet-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+  }
+  @keyframes pixel-pet-pop {
+    0% { transform: scale(1) translateY(0); }
+    40% { transform: scale(1.15) translateY(-6px); }
+    70% { transform: scale(0.95) translateY(0); }
+    100% { transform: scale(1) translateY(0); }
+  }
+  /* Reduced-motion is already handled globally (see the *, *::before,
+   * *::after rule above this @layer) — animation-duration collapses to
+   * 0.01ms for these too, no separate override needed. */
 }

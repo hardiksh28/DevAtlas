@@ -6,6 +6,7 @@ import { useParams, usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { DevAtlasLogo, DevAtlasMark } from "@/components/brand/Logo";
+import { CompanionWidget } from "@/components/companion/CompanionWidget";
 import { SidebarNav } from "@/components/layout/SidebarNav";
 import { UserMenu } from "@/components/layout/UserMenu";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -174,6 +175,8 @@ export function AppShell({ user, children }: { user: User; children: ReactNode }
         </header>
         <main className="flex-1">{children}</main>
       </div>
+
+      <CompanionWidget />
     </div>
   );
 }
