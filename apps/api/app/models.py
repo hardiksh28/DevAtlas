@@ -7,6 +7,7 @@ its models here — one import per module, side-effect only.
 """
 
 from app.modules.auth import models as auth_models  # noqa: F401
+from app.modules.build_plan import models as build_plan_models  # noqa: F401
 from app.modules.code_review import models as code_review_models  # noqa: F401
 from app.modules.curriculum import models as curriculum_models  # noqa: F401
 from app.modules.knowledge import models as knowledge_models  # noqa: F401

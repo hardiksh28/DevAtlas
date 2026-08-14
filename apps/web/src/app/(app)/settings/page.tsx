@@ -6,6 +6,7 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Button } from "ui";
 
+import { CompanionSection } from "@/components/settings/CompanionSection";
 import { Badge } from "@/components/ui/Badge";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { useCurrentUser, useLogoutAll, useResendVerification } from "@/hooks/useAuth";
@@ -113,6 +114,8 @@ export default function SettingsPage() {
           </p>
         )}
       </section>
+
+      <CompanionSection user={user} />
 
       <section aria-labelledby="appearance-heading" className="rounded-lg border border-line bg-surface p-5">
         <h2 id="appearance-heading" className="text-sm font-semibold text-ink-secondary">

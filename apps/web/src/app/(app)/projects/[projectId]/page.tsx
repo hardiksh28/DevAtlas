@@ -13,14 +13,15 @@ import {
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
+import { BuildPlanSection } from "@/components/projects/BuildPlanSection";
 import { RoadmapSection } from "@/components/projects/RoadmapSection";
 import { Badge } from "@/components/ui/Badge";
 import { useProject } from "@/hooks/useProjects";
 
 // Modules with no dedicated UI yet — visible-but-honest placeholders.
-// Roadmap has its own real section below; Mentor is live inside the
-// workspace's Chat tab (see the "Interactive workspace" section below) —
-// neither belongs in this "not built" list.
+// Roadmap and Build Plan have their own real sections below; Mentor is
+// live inside the workspace's Chat tab (see the "Interactive workspace"
+// section below) — none of the three belong in this "not built" list.
 const MODULES: { icon: LucideIcon; title: string; body: string }[] = [
   {
     icon: FileText,
@@ -82,6 +83,8 @@ export default function ProjectOverviewPage() {
       </section>
 
       <RoadmapSection projectId={project.id} />
+
+      <BuildPlanSection projectId={project.id} />
 
       {/* Module grid */}
       <section aria-labelledby="modules-heading">

@@ -11,6 +11,13 @@ export interface User {
   email_verified: boolean;
   status: string;
   created_at: string;
+  companion_name: string | null;
+  companion_avatar: string | null;
+}
+
+export interface UpdateCompanionPayload {
+  companion_name: string;
+  companion_avatar: string;
 }
 
 export interface AccessTokenResponse {

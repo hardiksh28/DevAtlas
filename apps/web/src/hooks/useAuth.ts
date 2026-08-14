@@ -11,10 +11,11 @@ import {
   register,
   resendVerification,
   resetPassword,
+  updateCompanion,
   verifyEmail,
 } from "@/lib/auth-api";
 import { ApiError } from "@/lib/api-client";
-import type { AccessTokenResponse, User } from "@/types/auth";
+import type { AccessTokenResponse, UpdateCompanionPayload, User } from "@/types/auth";
 
 export const CURRENT_USER_QUERY_KEY = ["currentUser"] as const;
 
@@ -102,5 +103,13 @@ export function useVerifyEmail() {
 export function useResendVerification() {
   return useMutation<Awaited<ReturnType<typeof resendVerification>>, ApiError, string>({
     mutationFn: resendVerification,
+  });
+}
+
+export function useUpdateCompanion() {
+  const setCurrentUser = useSetCurrentUser();
+  return useMutation<User, ApiError, UpdateCompanionPayload>({
+    mutationFn: updateCompanion,
+    onSuccess: (user) => setCurrentUser(user),
   });
 }

@@ -6,6 +6,7 @@ import type {
   MessageResponse,
   RegisterPayload,
   ResetPasswordPayload,
+  UpdateCompanionPayload,
   User,
   VerifyEmailPayload,
 } from "@/types/auth";
@@ -75,5 +76,12 @@ export function resendVerification(email: string): Promise<MessageResponse> {
     method: "POST",
     body: JSON.stringify({ email }),
     skipAuthRetry: true,
+  });
+}
+
+export function updateCompanion(payload: UpdateCompanionPayload): Promise<User> {
+  return apiFetch<User>("/v1/auth/me/companion", {
+    method: "PATCH",
+    body: JSON.stringify(payload),
   });
 }

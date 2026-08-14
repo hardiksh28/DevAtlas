@@ -37,6 +37,7 @@ from app.modules.auth.schemas import (
     RegisterRequest,
     ResendVerificationRequest,
     ResetPasswordRequest,
+    UpdateCompanionRequest,
     UserRead,
     VerifyEmailRequest,
 )
@@ -183,6 +184,18 @@ async def logout_all(
 @router.get("/me", response_model=UserRead)
 async def me(current_user: User = Depends(get_current_user)) -> UserRead:
     return UserRead.from_model(current_user)
+
+
+@router.patch("/me/companion", response_model=UserRead)
+async def update_companion(
+    payload: UpdateCompanionRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> UserRead:
+    user = await service.update_companion(
+        db, current_user, payload.companion_name, payload.companion_avatar
+    )
+    return UserRead.from_model(user)
 
 
 @router.post(

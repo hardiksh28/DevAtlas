@@ -352,3 +352,15 @@ async def get_user_by_id(db: AsyncSession, user_id: uuid.UUID) -> User | None:
 
 async def get_user_by_email(db: AsyncSession, email: str) -> User | None:
     return await _get_user_by_email(db, email)
+
+
+async def update_companion(db: AsyncSession, user: User, name: str, avatar: str) -> User:
+    """Sets the user's mentor persona. Global to the account (not
+    project-scoped) — the whole point is one consistent companion that
+    follows the learner across every project, the same way `Session`
+    isn't per-project."""
+    user.companion_name = name
+    user.companion_avatar = avatar
+    await db.commit()
+    await db.refresh(user)
+    return user

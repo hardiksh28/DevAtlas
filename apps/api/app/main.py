@@ -9,6 +9,8 @@ from app.core.logging import configure_logging
 from app.core.redis import redis_client
 from app.modules.auth.exceptions import register_auth_exception_handlers
 from app.modules.auth.router import router as auth_router
+from app.modules.build_plan.exceptions import register_build_plan_exception_handlers
+from app.modules.build_plan.router import router as build_plan_router
 from app.modules.code_review.exceptions import register_code_review_exception_handlers
 from app.modules.code_review.router import review_router
 from app.modules.code_review.router import router as code_review_router
@@ -80,6 +82,7 @@ register_workspace_exception_handlers(app)
 register_progress_tracking_exception_handlers(app)
 register_cost_control_exception_handlers(app)
 register_repo_ingestion_exception_handlers(app)
+register_build_plan_exception_handlers(app)
 
 
 @app.get("/health")
@@ -112,6 +115,7 @@ for module_router in (
     repo_ingestion_router,
     curriculum_router,
     roadmap_router,
+    build_plan_router,
     taxonomy_router,
     lessons_router,
     mentoring_router,

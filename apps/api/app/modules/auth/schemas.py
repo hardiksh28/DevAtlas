@@ -71,6 +71,35 @@ class ResendVerificationRequest(BaseModel):
     email: EmailStr
 
 
+# Closed set, matched by the frontend's icon picker (apps/web/src/lib/companion.ts)
+# — validated here rather than accepting an arbitrary string so a typo'd
+# or malicious value can never end up stored and later rendered as an
+# unrecognized icon key client-side.
+COMPANION_AVATARS = frozenset(
+    {"dog", "cat", "bot", "rabbit", "bird", "ghost", "turtle", "rocket"}
+)
+
+
+class UpdateCompanionRequest(BaseModel):
+    companion_name: str = Field(..., min_length=1, max_length=50)
+    companion_avatar: str
+
+    @field_validator("companion_name")
+    @classmethod
+    def _name_not_blank(cls, value: str) -> str:
+        stripped = value.strip()
+        if not stripped:
+            raise ValueError("companion_name cannot be blank")
+        return stripped
+
+    @field_validator("companion_avatar")
+    @classmethod
+    def _avatar_known(cls, value: str) -> str:
+        if value not in COMPANION_AVATARS:
+            raise ValueError(f"companion_avatar must be one of {sorted(COMPANION_AVATARS)}")
+        return value
+
+
 class UserRead(BaseModel):
     id: uuid.UUID
     email: str
@@ -78,6 +107,8 @@ class UserRead(BaseModel):
     email_verified: bool
     status: str
     created_at: datetime
+    companion_name: str | None
+    companion_avatar: str | None
 
     model_config = {"from_attributes": True}
 
@@ -96,6 +127,8 @@ class UserRead(BaseModel):
             email_verified=user.email_verified_at is not None,  # type: ignore[attr-defined]
             status=user.status,  # type: ignore[attr-defined]
             created_at=user.created_at,  # type: ignore[attr-defined]
+            companion_name=user.companion_name,  # type: ignore[attr-defined]
+            companion_avatar=user.companion_avatar,  # type: ignore[attr-defined]
         )
 
 

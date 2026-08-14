@@ -43,6 +43,13 @@ class User(Base):
     display_name: Mapped[str] = mapped_column(String(255))
     status: Mapped[str] = mapped_column(String(20), server_default="active")
 
+    # The user's named, customized mentor persona (see schemas.COMPANION_AVATARS
+    # for the closed set `companion_avatar` is validated against). Both
+    # nullable — a user who hasn't been through the naming flow yet still
+    # gets a mentor, just with a generic default in the UI.
+    companion_name: Mapped[str | None] = mapped_column(String(50), default=None)
+    companion_avatar: Mapped[str | None] = mapped_column(String(30), default=None)
+
     failed_login_attempts: Mapped[int] = mapped_column(SmallInteger, server_default="0")
     locked_until: Mapped[datetime | None] = mapped_column(default=None)
 
