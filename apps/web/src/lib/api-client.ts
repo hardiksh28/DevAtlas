@@ -10,15 +10,29 @@ export class ApiError extends Error {
   }
 }
 
+interface PydanticValidationError {
+  type: string;
+  loc: (string | number)[];
+  msg: string;
+}
+
 async function parseErrorMessage(res: Response, path: string, method: string): Promise<ApiError> {
   // The API's auth exception handlers (see apps/api/app/modules/auth/exceptions.py)
-  // always return {detail, error_code} JSON — surface `detail` when present
-  // so forms can show "Incorrect email or password" instead of a generic
-  // "POST /v1/auth/login failed: 401".
+  // always return {detail: string, error_code} JSON — surface `detail` when
+  // present so forms can show "Incorrect email or password" instead of a
+  // generic "POST /v1/auth/login failed: 401". FastAPI's own request-validation
+  // errors (422, e.g. a malformed email) bypass those handlers entirely and
+  // return `detail` as an array of Pydantic error objects instead of a string —
+  // both shapes have to be handled or a validation error renders as
+  // "[object Object]" in the form.
   try {
-    const body = (await res.json()) as { detail?: string; error_code?: string };
-    if (body?.detail) {
+    const body = (await res.json()) as { detail?: string | PydanticValidationError[]; error_code?: string };
+    if (typeof body?.detail === "string") {
       return new ApiError(res.status, body.detail, body.error_code);
+    }
+    if (Array.isArray(body?.detail) && body.detail.length > 0) {
+      const message = body.detail.map((err) => err.msg).join(" ");
+      return new ApiError(res.status, message);
     }
   } catch {
     // Response wasn't JSON (or was empty) — fall through to the generic message.

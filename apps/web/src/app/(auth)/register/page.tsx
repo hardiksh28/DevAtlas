@@ -31,8 +31,8 @@ export default function RegisterPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-xl font-semibold text-ink">Create your account</h1>
-        <p className="mt-1 text-sm text-ink-muted">
+        <h1 className="text-2xl font-black tracking-tight text-ink">Create your account</h1>
+        <p className="mt-1.5 text-sm text-ink-muted">
           Start with a project. Learn what it takes to ship it.
         </p>
       </div>
@@ -74,19 +74,23 @@ export default function RegisterPage() {
         />
 
         {register.isError && (
-          <p role="alert" className="text-sm text-danger-ink">
+          <p role="alert" className="rounded-lg border border-danger/30 bg-danger-soft px-3 py-2 text-sm text-danger-ink">
             {register.error.message}
           </p>
         )}
 
-        <Button type="submit" loading={register.isPending} className="w-full">
+        <Button
+          type="submit"
+          loading={register.isPending}
+          className="w-full rounded-full border-2 border-ink font-bold sticker-shadow-sm sticker-shadow-hover"
+        >
           Create account
         </Button>
       </form>
 
       <p className="text-sm text-ink-muted">
         Already have an account?{" "}
-        <Link href="/login" className="rounded-sm font-medium text-accent-ink hover:underline">
+        <Link href="/login" className="rounded-sm font-bold text-accent-ink hover:underline">
           Sign in
         </Link>
       </p>

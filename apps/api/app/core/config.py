@@ -22,13 +22,21 @@ class Settings(BaseSettings):
 
     ollama_base_url: str = "http://ollama:11434"
     ollama_model: str = "llama3.1:8b"
-    llm_provider: str = "ollama"
+    llm_provider: Literal["ollama", "groq"] = "ollama"
     # Embedding-capable model, separate from `ollama_model` (a chat/
     # generation model) — Ollama treats these as different model
     # families entirely, not a mode flag on one model. 768-dim,
     # matching schemas.EMBEDDING_DIMENSIONS (see that module's docstring
     # for why the two must never disagree).
     ollama_embedding_model: str = "nomic-embed-text"
+
+    # --- Groq (hosted inference — see providers/groq_provider.py) ---
+    # Groq has no embeddings endpoint, so GroqProvider.embed() delegates
+    # to Ollama's nomic-embed-text regardless of which provider generate()
+    # uses — a local Ollama install is still required for RAG search even
+    # when LLM_PROVIDER=groq covers mentor/lesson/review generation.
+    groq_api_key: str | None = None
+    groq_model: str = "llama-3.1-8b-instant"
 
     github_oauth_client_id: str | None = None
     github_oauth_client_secret: str | None = None
@@ -86,6 +94,20 @@ class Settings(BaseSettings):
 
     # --- Auth: links embedded in transactional emails ---
     frontend_url: str = "http://localhost:3000"
+
+    # --- Auth: transactional email delivery (app/modules/auth/email.py) ---
+    # "console" (default) logs the email instead of sending it — no
+    # provider account needed for local dev/tests. Set to "resend" plus
+    # resend_api_key to actually deliver password-reset/verification
+    # emails; get_email_sender() falls back to console with a warning if
+    # "resend" is selected but no key is set, so a misconfigured deploy
+    # fails loud in the logs rather than 500ing on every registration.
+    email_provider: Literal["console", "resend"] = "console"
+    resend_api_key: str | None = None
+    # Must be on a domain verified in the Resend dashboard once you're
+    # past their sandbox sender (onboarding@resend.dev only delivers to
+    # the account owner's own inbox).
+    email_from_address: str = "DevAtlas <onboarding@resend.dev>"
 
     # --- Project Workspace ---
     # Guards against unbounded storage growth from a single authenticated

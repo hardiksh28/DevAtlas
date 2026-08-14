@@ -28,8 +28,8 @@ function LoginForm() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-xl font-semibold text-ink">Sign in</h1>
-        <p className="mt-1 text-sm text-ink-muted">Welcome back — pick up where you left off.</p>
+        <h1 className="text-2xl font-black tracking-tight text-ink">Welcome back</h1>
+        <p className="mt-1.5 text-sm text-ink-muted">Sign in to pick up where you left off.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate={false}>
@@ -53,21 +53,25 @@ function LoginForm() {
         />
 
         {login.isError && (
-          <p role="alert" className="text-sm text-danger-ink">
+          <p role="alert" className="rounded-lg border border-danger/30 bg-danger-soft px-3 py-2 text-sm text-danger-ink">
             {login.error.message}
           </p>
         )}
 
-        <Button type="submit" loading={login.isPending} className="w-full">
+        <Button
+          type="submit"
+          loading={login.isPending}
+          className="w-full rounded-full border-2 border-ink font-bold sticker-shadow-sm sticker-shadow-hover"
+        >
           Sign in
         </Button>
       </form>
 
-      <div className="flex justify-between text-sm">
+      <div className="flex items-center justify-between text-sm">
         <Link href="/forgot-password" className="rounded-sm text-ink-secondary hover:text-ink hover:underline">
           Forgot password?
         </Link>
-        <Link href="/register" className="rounded-sm font-medium text-accent-ink hover:underline">
+        <Link href="/register" className="rounded-sm font-bold text-accent-ink hover:underline">
           Create an account
         </Link>
       </div>

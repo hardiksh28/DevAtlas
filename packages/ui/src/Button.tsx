@@ -32,7 +32,7 @@ export function Button({
     sm: "min-h-8 px-3 py-1.5 text-sm",
   };
   const variants = {
-    primary: "bg-accent text-white hover:bg-accent-hover disabled:hover:bg-accent",
+    primary: "bg-accent text-ink hover:bg-accent-hover disabled:hover:bg-accent",
     secondary:
       "border border-line bg-surface text-ink hover:bg-surface-muted disabled:hover:bg-surface",
     ghost: "text-ink-secondary hover:bg-surface-muted hover:text-ink",

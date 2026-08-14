@@ -13,7 +13,9 @@ centrally, via the exception handlers registered in main.py).
 """
 
 import asyncio
+import logging
 import uuid
+from collections.abc import Awaitable
 from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import select, update
@@ -42,10 +44,32 @@ from app.modules.auth.security import (
 )
 
 settings = get_settings()
+logger = logging.getLogger("app.auth.service")
 
 
 def _now() -> datetime:
     return datetime.now(UTC)
+
+
+async def _send_email_best_effort(send: Awaitable[None], *, context: str) -> None:
+    """Delivery is fire-and-forget from every caller's perspective — a
+    provider outage, bad recipient, or (with a sandbox Resend sender) a
+    non-verified-domain rejection must never turn into a request failure.
+    Two reasons that matters more than the obvious "don't break the UX":
+    request_password_reset's whole enumeration-safety guarantee (see its
+    docstring) depends on the response looking identical whether the
+    email exists or not — an uncaught send failure would make a
+    *registered* email's request 500 while an unregistered one silently
+    200s, which is exactly the timing/behavior oracle that function
+    exists to avoid. For registration, the alternative is worse in a
+    different way: the user row is already committed by the time the
+    email is sent, so a raised exception here would 500 an operation
+    that, from the database's perspective, already succeeded.
+    """
+    try:
+        await send
+    except Exception:
+        logger.exception("Transactional email send failed (%s) — continuing without it.", context)
 
 
 # A real Argon2id hash of a fixed, unrelated string — verified against
@@ -93,7 +117,10 @@ async def register_user(db: AsyncSession, email: str, password: str, display_nam
     await db.commit()
     await db.refresh(user)
 
-    await send_email_verification_email(get_email_sender(), user.email, raw_token)
+    await _send_email_best_effort(
+        send_email_verification_email(get_email_sender(), user.email, raw_token),
+        context="verification email on register",
+    )
     return user
 
 
@@ -137,7 +164,10 @@ async def resend_verification_email(db: AsyncSession, user: User) -> None:
     )
     raw_token = await _create_email_verification_token(db, user)
     await db.commit()
-    await send_email_verification_email(get_email_sender(), user.email, raw_token)
+    await _send_email_best_effort(
+        send_email_verification_email(get_email_sender(), user.email, raw_token),
+        context="verification email on resend",
+    )
 
 
 # --- Login & lockout ---
@@ -279,7 +309,10 @@ async def request_password_reset(db: AsyncSession, email: str) -> None:
     db.add(PasswordResetToken(user_id=user.id, token_hash=token_hash, expires_at=expires_at))
     await db.commit()
 
-    await send_password_reset_email(get_email_sender(), user.email, raw_token)
+    await _send_email_best_effort(
+        send_password_reset_email(get_email_sender(), user.email, raw_token),
+        context="password reset email",
+    )
 
 
 async def reset_password(db: AsyncSession, raw_token: str, new_password: str) -> None:
