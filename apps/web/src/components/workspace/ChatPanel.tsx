@@ -32,7 +32,7 @@ export function ChatPanel({ projectId }: { projectId: string }) {
             key={message.id}
             className={`max-w-[90%] rounded-lg px-3 py-2 text-sm ${
               message.role === "user"
-                ? "ml-auto bg-accent text-white"
+                ? "ml-auto bg-accent text-ink"
                 : "bg-surface-muted text-ink"
             }`}
           >

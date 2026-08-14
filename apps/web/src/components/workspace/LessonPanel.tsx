@@ -24,7 +24,7 @@ export function LessonPanel({ projectId }: { projectId: string }) {
   if (roadmapError || !roadmap) {
     return (
       <p className="p-4 text-sm text-ink-muted">
-        No roadmap yet for this project — generate one from the Curriculum tab first.
+        No roadmap yet for this project — generate one from the project overview page first.
       </p>
     );
   }
