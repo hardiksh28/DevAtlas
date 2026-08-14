@@ -3,6 +3,7 @@ from functools import lru_cache
 from app.core.config import get_settings
 from app.modules.llm_gateway.graph import build_graph
 from app.modules.llm_gateway.providers.base import LLMProvider
+from app.modules.llm_gateway.providers.groq_provider import GroqProvider
 from app.modules.llm_gateway.providers.ollama_provider import OllamaProvider
 
 settings = get_settings()
@@ -11,6 +12,8 @@ settings = get_settings()
 def _build_provider() -> LLMProvider:
     if settings.llm_provider == "ollama":
         return OllamaProvider()
+    if settings.llm_provider == "groq":
+        return GroqProvider()
     raise ValueError(
         f"Unknown LLM_PROVIDER '{settings.llm_provider}'. Add a provider under "
         "app/modules/llm_gateway/providers/ and register it here."

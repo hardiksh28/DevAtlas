@@ -29,6 +29,7 @@ venv/
 htmlcov/
 *.db
 *.sqlite3
+dump.rdb
 
 # --- Docker / infra ---
 infra/docker/postgres/data/
