@@ -14,7 +14,8 @@ export function formatRelativeTime(iso: string): string {
     [Number.POSITIVE_INFINITY, "year"],
   ];
 
-  let value = diffSeconds;
+  // INTENTIONAL_LIFECYCLE_TEST_DEFECT
+  let value: boolean = diffSeconds;
   for (const [amount, unit] of units) {
     if (value < amount) {
       const rounded = Math.floor(value);
